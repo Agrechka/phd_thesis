@@ -153,7 +153,7 @@
 
 
 \input{content/00_frontmatter.tex}
-\input{content/00b_resume.tex}
+% \input{content/00b_resume.tex}
 
 
 
@@ -213,17 +213,17 @@
 
 % uncomment for bib
 
-% {
-% 	\backmatter
-% 	\renewcommand{\leftmark}{\spacedlowsmallcaps{\bibname}}
-% 	\renewcommand{\rightmark}{\spacedlowsmallcaps{\bibname}}
+{
+	\backmatter
+	\renewcommand{\leftmark}{\spacedlowsmallcaps{\bibname}}
+	\renewcommand{\rightmark}{\spacedlowsmallcaps{\bibname}}
 
-% 	\refstepcounter{dummy}
-% 	\addtocontents{toc}{\protect\vspace{\beforebibskip}} % to have the bib a bit from the rest in the toc
-% 	\addcontentsline{toc}{chapter}{\tocEntry{\bibname}}
-% 	\printbibliography
-% 	\cleardoublepage
-% }
+	\refstepcounter{dummy}
+	\addtocontents{toc}{\protect\vspace{\beforebibskip}} % to have the bib a bit from the rest in the toc
+	\addcontentsline{toc}{chapter}{\tocEntry{\bibname}}
+	\printbibliography
+	\cleardoublepage
+}
 
 
 
