@@ -133,8 +133,8 @@
 \setboolean{skipMagec}{false}
 \setboolean{skipFlexit}{false}
 \setboolean{skipGrad}{false}
-\setboolean{skipConclusion}{true}
-\setboolean{skipAppendix}{true}
+\setboolean{skipConclusion}{false}
+\setboolean{skipAppendix}{false}
 
 %\mtcsetoffset{minitoc}{-0.80em}
 
@@ -198,11 +198,11 @@
 \cleardoublepage
 \let\leftmark=\oldleftmark
 
-% \appendix
-% \acresetall
-% \input{content/07_appendix.tex}
-% \cleardoublepage
-% \let\leftmark=\oldleftmark
+\appendix
+\acresetall
+\input{content/07_appendix.tex}
+\cleardoublepage
+\let\leftmark=\oldleftmark
 
 
 % %\acresetall

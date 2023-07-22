@@ -925,3 +925,388 @@ It is important to note that many open-source diffusion models are trained with 
 
 
 %\end{document}
+
+
+
+
+\section{Additional Quantitative and Qualitative Results}
+
+%\subsection{Additional quantitative results for \textit{thin} and \textit{medium} masks}
+
+Tab.~\ref{thin_med_results} compares various training-based (LaMa and Palette) and training-free (Repaint, \emph{combine-noisy}, \emph{combine-image} MCG and GradPaint (ours)) methods for \emph{thin} and \emph{medium} masks which LaMa used for training. As we can see, our method generally achieves the best FID score and a comparable LPIPS score even with LaMa's fully supervised method.  
+
+% \begin{table*}[H]
+% \small
+% \begin{tabular}{|l|cccccc|cccccc|}
+% \hline
+% \multicolumn{1}{|r|}{Dataset} &
+%   \multicolumn{6}{c|}{FFHQ (pretrained on CelebaHQ)} &
+%   \multicolumn{6}{c|}{CelebaHQ (pretrained on FFHQ)} \\ \hline
+% \multicolumn{1}{|r|}{Masks} &
+%   \multicolumn{2}{c|}{Thin} &
+%   \multicolumn{2}{c|}{Medium} &
+%   \multicolumn{2}{c|}{Thick} &
+%   \multicolumn{2}{c|}{Thin} &
+%   \multicolumn{2}{c|}{Medium} &
+%   \multicolumn{2}{c|}{Thick} \\ \hline
+% \multicolumn{1}{|r|}{Metrics} &
+%   \multicolumn{1}{c|}{FID$\downarrow$} &
+%   \multicolumn{1}{c|}{LPIPS$\downarrow$} &
+%   \multicolumn{1}{c|}{FID$\downarrow$} &
+%   \multicolumn{1}{c|}{LPIPS$\downarrow$} &
+%   \multicolumn{1}{c|}{FID$\downarrow$} &
+%   LPIPS$\downarrow$ &
+%   \multicolumn{1}{c|}{FID$\downarrow$} &
+%   \multicolumn{1}{c|}{LPIPS$\downarrow$} &
+%   \multicolumn{1}{c|}{FID$\downarrow$} &
+%   \multicolumn{1}{c|}{LPIPS$\downarrow$} &
+%   \multicolumn{1}{c|}{FID$\downarrow$} &
+%   LPIPS$\downarrow$ \\ \hline %\hhline{|=|=|=|=|=|=|=|=|=|=|=|=|=|}
+%   \rowcolor[gray]{0.7}
+% COPY &
+%   \multicolumn{1}{c|}{4.29} &
+%   \multicolumn{1}{c|}{0} &
+%   \multicolumn{1}{c|}{4.29} &
+%   \multicolumn{1}{c|}{0} &
+%   \multicolumn{1}{c|}{4.29} &
+%   0 &
+%   \multicolumn{1}{c|}{3.01} &
+%   \multicolumn{1}{c|}{0} &
+%   \multicolumn{1}{c|}{3.01} &
+%   \multicolumn{1}{c|}{0} &
+%   \multicolumn{1}{c|}{3.01} &
+%   0 \\ \hline
+% GREYFILL &
+%   \multicolumn{1}{c|}{154.6} &
+%   \multicolumn{1}{c|}{0.353} &
+%   \multicolumn{1}{c|}{98.75} &
+%   \multicolumn{1}{c|}{0.250} &
+%   \multicolumn{1}{c|}{78.08} &
+%   0.257 &
+%   \multicolumn{1}{c|}{173.65} &
+%   \multicolumn{1}{c|}{0.3770} &
+%   \multicolumn{1}{c|}{124.32} &
+%   \multicolumn{1}{c|}{0.2631} &
+%   \multicolumn{1}{c|}{96.41} &
+%   0.264 \\ \Xhline{4\arrayrulewidth}
+% LaMa&
+%   \multicolumn{1}{c|}{\textbf{6.22}} &
+%   \multicolumn{1}{c|}{\textbf{0.041}} &
+%   \multicolumn{1}{c|}{{\underline{5.61}}} &
+%   \multicolumn{1}{c|}{\textbf{0.052}} &
+%   \multicolumn{1}{c|}{{6.27}} &
+%   \textbf{0.076} &
+%   \multicolumn{1}{c|}{n/a} &
+%   \multicolumn{1}{c|}{n/a} &
+%   \multicolumn{1}{c|}{n/a} &
+%   \multicolumn{1}{c|}{n/a} &
+%   \multicolumn{1}{c|}{n/a} &
+%   n/a \\ \hline
+% Palette &
+%   \multicolumn{1}{c|}{6.78} &
+%   \multicolumn{1}{c|}{{\underline{0.049}}} &
+%   \multicolumn{1}{c|}{6.78} &
+%   \multicolumn{1}{c|}{{\underline{0.068}}} &
+%   \multicolumn{1}{c|}{7.28} &
+%   0.096 &
+%   \multicolumn{1}{c|}{n/a} &
+%   \multicolumn{1}{c|}{n/a} &
+%   \multicolumn{1}{c|}{n/a} &
+%   \multicolumn{1}{c|}{n/a} &
+%   \multicolumn{1}{c|}{n/a} &
+%   n/a \\ \Xhline{4\arrayrulewidth}
+% Repaint &
+%   \multicolumn{1}{c|}{13.25} &
+%   \multicolumn{1}{c|}{0.060} &
+%   \multicolumn{1}{c|}{12.21} &
+%   \multicolumn{1}{c|}{0.080} &
+%   \multicolumn{1}{c|}{9.09} &
+%   0.090 &
+%   \multicolumn{1}{c|}{8.23} &
+%   \multicolumn{1}{c|}{\textbf{0.047}} &
+%   \multicolumn{1}{c|}{8.14} &
+%   \multicolumn{1}{c|}{\underline{0.062}} &
+%   \multicolumn{1}{c|}{8.44} &
+%   \textbf{0.078} \\ \hline
+% MCG &
+%   \multicolumn{1}{c|}{7.71} &
+%   \multicolumn{1}{c|}{0.062} &
+%   \multicolumn{1}{c|}{5.97} &
+%   \multicolumn{1}{c|}{0.073} &
+%   \multicolumn{1}{c|}{\underline{6.17}} &
+%   0.097 &
+%   \multicolumn{1}{c|}{8.43} &
+%   \multicolumn{1}{c|}{0.059} &
+%   \multicolumn{1}{c|}{6.52} &
+%   \multicolumn{1}{c|}{0.065} &
+%   \multicolumn{1}{c|}{6.67} &
+%   0.084 \\ \hline
+% \begin{tabular}[c]{@{}l@{}}\textit{combine-noisy}\end{tabular} &
+%   \multicolumn{1}{c|}{13.48} &
+%   \multicolumn{1}{c|}{0.090} &
+%   \multicolumn{1}{c|}{9.35} &
+%   \multicolumn{1}{c|}{0.099} &
+%   \multicolumn{1}{c|}{9.04} & 0.119
+%    &
+%   \multicolumn{1}{c|}{ 11.1} &
+%   \multicolumn{1}{c|}{0.070} &
+%   \multicolumn{1}{c|}{9.78} &
+%   \multicolumn{1}{c|}{0.081} &
+%   \multicolumn{1}{c|}{9.89} & 0.103
+%    \\ \hline
+% \begin{tabular}[c]{@{}l@{}}\textit{combine-image}\end{tabular} &
+%   \multicolumn{1}{c|}{11.19} &
+%   \multicolumn{1}{c|}{0.096} &
+%   \multicolumn{1}{c|}{7.49} &
+%   \multicolumn{1}{c|}{0.102} &
+%   \multicolumn{1}{c|}{7.30} &
+%   0.123 &
+%   \multicolumn{1}{c|}{\underline{7.89}} &
+%   \multicolumn{1}{c|}{0.080} &
+%   \multicolumn{1}{c|}{\underline{5.96}} &
+%   \multicolumn{1}{c|}{0.089} &
+%   \multicolumn{1}{c|}{\underline{5.83}} &
+%   0.110 \\ \hline
+% GradPaint (ours) &
+%   \multicolumn{1}{c|}{{\underline{6.613}}} &
+%   \multicolumn{1}{c|}{0.060} &
+%   \multicolumn{1}{c|}{\textbf{5.39}} &
+%   \multicolumn{1}{c|}{{\underline{0.069}}} &
+%   \multicolumn{1}{c|}{\textbf{5.65}} &
+%   {\underline{0.084}} &
+%   \multicolumn{1}{c|}{\textbf{5.13}} &
+%   \multicolumn{1}{c|}{{\underline{0.051}}} &
+%   \multicolumn{1}{c|}{\textbf{4.29}} &
+%   \multicolumn{1}{c|}{\textbf{0.059}} &
+%   \multicolumn{1}{c|}{\textbf{4.41}} &
+%   \textbf{0.077} \\ \hline
+% \end{tabular}
+% \caption{Evaluation of various methods on FFHQ and CelebaHQ datasets. Rows in gray (COPY and GREYFILL) are respectfully the lower and upper bounds for LPIPS and FID. LaMa and Palette are both training-based methods. RePaint, \emph{combine-noisy}, \emph{combine-image}, MCG and GradPaint are all training-free methods which all use the same model based on guided diffusion\cite{guided-diffusion}. Best score is shown \textbf{in bold} and second best \underline{underlined}.}
+% \label{main_results}
+% \end{table*}
+
+
+
+
+\begin{table}[H]
+\small
+\centering
+\begin{tabular}{|l|cccccc|cccccc|}
+\hline
+\multicolumn{1}{|r|}{Dataset} &
+  \multicolumn{4}{c|}{FFHQ (pretrained on CelebaHQ)} &
+  \multicolumn{4}{c|}{CelebaHQ (pretrained on FFHQ)} \\ \hline
+\multicolumn{1}{|r|}{Masks} &
+  \multicolumn{2}{c|}{Thin} &
+  \multicolumn{2}{c|}{Medium} &
+  \multicolumn{2}{c|}{Thin} &
+  \multicolumn{2}{c|}{Medium} \\ \hline
+\multicolumn{1}{|r|}{Metrics} &
+  \multicolumn{1}{c|}{FID$\downarrow$} &
+  \multicolumn{1}{c|}{LPIPS$\downarrow$} &
+  \multicolumn{1}{c|}{FID$\downarrow$} &
+  \multicolumn{1}{c|}{LPIPS$\downarrow$} &
+  \multicolumn{1}{c|}{FID$\downarrow$} &
+  \multicolumn{1}{c|}{LPIPS$\downarrow$} &
+  \multicolumn{1}{c|}{FID$\downarrow$} &
+  \multicolumn{1}{c|}{LPIPS$\downarrow$} \\ \hline %\hhline{|=|=|=|=|=|=|=|=|=|=|=|=|=|}
+  \rowcolor[gray]{0.7}
+COPY (oracle) &
+  \multicolumn{1}{c|}{4.29} &
+  \multicolumn{1}{c|}{0} &
+  \multicolumn{1}{c|}{4.29} &
+  \multicolumn{1}{c|}{0} &
+  \multicolumn{1}{c|}{3.01} &
+  \multicolumn{1}{c|}{0} &
+  \multicolumn{1}{c|}{3.01} &
+  \multicolumn{1}{c|}{0} 
+  \\ \hline
+GREYFILL &
+  \multicolumn{1}{c|}{154.6} &
+  \multicolumn{1}{c|}{0.353} &
+  \multicolumn{1}{c|}{98.75} &
+  \multicolumn{1}{c|}{0.250} &
+  \multicolumn{1}{c|}{173.65} &
+  \multicolumn{1}{c|}{0.3770} &
+  \multicolumn{1}{c|}{124.32} &
+  \multicolumn{1}{c|}{0.2631} 
+  \\ \Xhline{4\arrayrulewidth}
+LaMa&
+  \multicolumn{1}{c|}{\textbf{6.22}} &
+  \multicolumn{1}{c|}{\textbf{0.041}} &
+  \multicolumn{1}{c|}{{\underline{5.61}}} &
+  \multicolumn{1}{c|}{\textbf{0.052}} &
+  \multicolumn{1}{c|}{n/a} &
+  \multicolumn{1}{c|}{n/a} &
+  \multicolumn{1}{c|}{n/a} &
+  \multicolumn{1}{c|}{n/a} 
+  \\ \hline
+Palette &
+  \multicolumn{1}{c|}{6.78} &
+  \multicolumn{1}{c|}{{\underline{0.049}}} &
+  \multicolumn{1}{c|}{6.78} &
+  \multicolumn{1}{c|}{{\underline{0.068}}} &
+  \multicolumn{1}{c|}{n/a} &
+  \multicolumn{1}{c|}{n/a} &
+  \multicolumn{1}{c|}{n/a} &
+  \multicolumn{1}{c|}{n/a}  
+  \\ \Xhline{4\arrayrulewidth}
+Repaint &
+  \multicolumn{1}{c|}{13.25} &
+  \multicolumn{1}{c|}{0.060} &
+  \multicolumn{1}{c|}{12.21} &
+  \multicolumn{1}{c|}{0.080} &
+  \multicolumn{1}{c|}{8.23} &
+  \multicolumn{1}{c|}{\textbf{0.047}} &
+  \multicolumn{1}{c|}{8.14} &
+  \multicolumn{1}{c|}{\underline{0.062}} 
+  \\ \hline
+MCG &
+  \multicolumn{1}{c|}{7.71} &
+  \multicolumn{1}{c|}{0.062} &
+  \multicolumn{1}{c|}{5.97} &
+  \multicolumn{1}{c|}{0.073} &
+  \multicolumn{1}{c|}{8.43} &
+  \multicolumn{1}{c|}{0.059} &
+  \multicolumn{1}{c|}{6.52} &
+  \multicolumn{1}{c|}{0.065} 
+  \\ \hline
+\begin{tabular}[c]{@{}l@{}}\textit{combine-noisy}\end{tabular} &
+  \multicolumn{1}{c|}{13.48} &
+  \multicolumn{1}{c|}{0.090} &
+  \multicolumn{1}{c|}{9.35} &
+  \multicolumn{1}{c|}{0.099} &
+  \multicolumn{1}{c|}{ 11.1} &
+  \multicolumn{1}{c|}{0.070} &
+  \multicolumn{1}{c|}{9.78} &
+  \multicolumn{1}{c|}{0.081} 
+  \\ \hline
+\begin{tabular}[c]{@{}l@{}}\textit{combine-image}\end{tabular} &
+  \multicolumn{1}{c|}{11.19} &
+  \multicolumn{1}{c|}{0.096} &
+  \multicolumn{1}{c|}{7.49} &
+  \multicolumn{1}{c|}{0.102} &
+  \multicolumn{1}{c|}{\underline{7.89}} &
+  \multicolumn{1}{c|}{0.080} &
+  \multicolumn{1}{c|}{\underline{5.96}} &
+  \multicolumn{1}{c|}{0.089} \\ \hline
+GradPaint (ours) &
+  \multicolumn{1}{c|}{{\underline{6.613}}} &
+  \multicolumn{1}{c|}{0.060} &
+  \multicolumn{1}{c|}{\textbf{5.39}} &
+  \multicolumn{1}{c|}{{\underline{0.069}}} &
+  \multicolumn{1}{c|}{\textbf{5.13}} &
+  \multicolumn{1}{c|}{{\underline{0.051}}} &
+  \multicolumn{1}{c|}{\textbf{4.29}} &
+  \multicolumn{1}{c|}{\textbf{0.077}} \\ \hline
+\end{tabular}
+\vspace{1mm}
+\caption{Evaluation of various methods on FFHQ and CelebaHQ datasets for \textit{thin} and \textit{medium} masks. Rows COPY (oracle) and GREYFILL are respectfully the lower and upper bounds for LPIPS and FID. LaMa and Palette are both training-based methods. RePaint, \emph{combine-noisy}, \emph{combine-image}, MCG and GradPaint are all training-free methods which all use the same model based on guided diffusion. Best score is shown \textbf{in bold} and second best \underline{underlined}.}
+\label{thin_med_results}
+\end{table}
+
+
+
+
+
+
+%\subsection{Additional Qualitative examples}
+
+
+
+
+
+Figs.~\ref{fig:qualitative_thin} and ~\ref{fig:qualitative_thick} show additional qualitative examples using \emph{thin} and \emph{medium} masks. With these smaller masks, the visual differences are sometimes harder to appreciate, and we recommend zooming when viewing results. We compare our method to the baselines \emph{combine-image}, \emph{combine-noisy}, LaMa, and RePaint. Baselines \emph{combine-noisy} and \emph{combine-image} clearly have harmonization issues. LaMa tends to have blurry artifacts typical of GANs in the generated areas. RePaint generally produces realistic generations, but which aren't always coherent with other elements of the image. Our method produces high-quality results at a much smaller computational cost than RePaint.
+
+
+Fig.~\ref{fig:res_ffhq} shows additional select examples on FFHQ dataset. Notice that LaMa produces results close to the reference image, but generally containing blurry artifacts, explaining the generally higher LPIPS scores but lower FID scores than our method. RePaint's method, despite requiring over 5 minutes of compute time for a generation, produces smooth local changes but often fails to harmonize with the global structure of the image (rows 1, 2, 4, 5). Our method produces high-quality and harmonized results, especially visible when the generation requires surrounding context, such as rows 1 and 5 which necessitate generating glasses.
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\linewidth]{images/ThinMasks.pdf}
+    \caption{Qualitative results with thin masks. Best viewed zoomed and in color. In \emph{(a)}, notice the quality of the text of the hat, which our method most successfully reconstructs. Notice the background face on the right in \emph{(b)}, which only our method managed to decently generate. Finally, in \emph{(c)}, \emph{(d)}, and \emph{(e)}, methods \emph{combine-noisy} and \emph{combine-image} have harmonization issues (see eyes, cheek/eyebrow, and lips respectively), while our method is on par with the costly RePaint.}
+    \label{fig:qualitative_thin}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\linewidth]{images/MediumMasks.pdf}
+    \caption{Qualitative results with medium masks. Best viewed zoomed and in color. Methods \emph{combine-noisy} and \emph{combine-image} have harmonization issues, particularly in \emph{(a)} and \emph{(b)}. Notice the badge on the hat in \emph{(c)} where most methods fail to realistically integrate it with the hat. In \emph{(d)}, our method most successfully generates an eye which matches with the input eye. Finally, all methods struggle with the difficult example \emph{(e)}, as it is poorly represented in the training distriubtion.  Nevertheless, our method is the sole one which attempts to reconstruct the hand as a separate entity from the face.}
+    \label{fig:qualitative_thick}
+\end{figure*}
+
+%will be displayed next page
+\begin{figure*}[htbp]
+  \centering
+    \includegraphics[width=0.95\linewidth]{images/CVPR_ffhq.jpeg}
+    \caption{Inpainting results on select images from FFHQ. Best viewed zoomed and in color. Notice that while the overall reconstruction of LaMa is decent, zooming on the image unveils visible blurry and unrealistic artifacts typical of GANs. Results using the \emph{combine-image} baseline are of poor quality with an obvious ``copy/paste" effect at the mask. Notice that even with the 4500 forward passes necessary for RePaint, the overall image coherence often fails, despite the high-quality local generation.  Our method produces high-quality generation while matching with the global structure of the rest of the image. All models were trained on CelebAHQ dataset.}
+    \label{fig:res_ffhq}
+\end{figure*}
+
+\section{Additional Qualitative experiments with Latent Diffusion Models}
+\begin{figure*}
+    \centering
+    \includegraphics[width=0.625\linewidth]{images/in_latent_samples.pdf}
+    \caption{Qualitative examples from ImageNet with the latent diffusion model. Both the baseline and our algorithm are initialized with the same initial noise map.}
+    \label{fig:qualitative_latent_imagenet}
+\end{figure*}
+
+Fig.~\ref{fig:qualitative_latent_imagenet} shows visual examples of our inpainting results using latent diffusion models. While the baseline method produces low-quality results, our method produces realistic and harmonized results.  
+
+
+\section{Time - Quality trade-off}
+
+\label{speed_section}
+
+\begin{figure*}[t!]
+    \centering
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[height=2.3in]{images/speed_fid.png}
+        \caption{FID vs. Time tradeoff}
+    \end{subfigure}%
+    ~ 
+    \begin{subfigure}[t]{0.5\linewidth}
+        \centering
+        \includegraphics[height=2.3in]{images/speed_lpips.png}
+        \caption{LPIPS vs. Time tradeoff}
+    \end{subfigure}
+    \caption{Performance vs. Time tradeoff, performed on ImageNet. We performed various settings where we early stopped the gradient calculation of GradPaint at $13\%, 25\%, 38\%, 50\%, 63\%, 75\%$ of the denoising process. The most important gains of GradPaint occurs thanks to the early gradient-guidance, and after $63\%$, gradient guiding no longer helps performance. A reasonable early-stopping at $50\%$ of the denoising process reduces the initial time of GradPaint by $33\%$.}
+    \label{timsvsacc}
+\end{figure*}
+
+Our method requires approximately 3x the compute time of the  gradient-free sampling baselines \emph{combine-image} and \emph{combine-noisy}, explained by the added backpropagation of every step of the denoising process. As illustrated in Fig.2 of the main paper, our method succeeds because the prediction $\hat{x}_0$ is aligned and harmonized with the input image early on in the diffusion process. We can improve the time of GradPaint by early-stopping the gradient calculation and letting the rest of the denoising process run as in \emph{combine-image}. If the harmonization succeeded well-enough early on, then subsequent gradient calculations may not be necessary later in the denoising process, saving valuable compute time. We performed these experiments for various early stopping times of the total denoising process. Fig.~\ref{timsvsacc} shows the performance in terms of LPIPS and FID for the various settings. Performing GradPaint after $63\%$ of the denoising process doesn't improve performance, and significantly increases compute time. Stopping the gradient calculation at about $50\%$ of the denoising process achieves the most important gains in performance and allows us to reduce the initial GradPaint time by $33\%$.
+
+
+\section{Uncurated Results and Limits}
+
+We primarily previously showed select results on challenging tasks with masks in key places to better appreciate the differences between methods. Figs.~\ref{fig:uncur1}, ~\ref{fig:uncur2}, ~\ref{fig:uncur3}, and ~\ref{fig:uncur4} show uncurated examples from on ImageNet comparing \emph{combine-image}, RePaint, and GradPaint. GradPaint works particularly well when the task requires fine-grained texture alignment (see rows 1, 5, 12, 31)  and tends to work significantly better for global image coherence compared to other methods (see rows 2, 4, 6, 29, 36, 37). However, GradPaint sometimes fails with difficult tasks with unstandard context (see rows 14, 36). From time to time, we see that GradPaint may slightly add unneeded bias to the inpainting task from the background, e.g. row 41 produced a dog with a pink nose, influenced by the pink background. In general, GradPaint works better than RePaint, even though RePaint requires 5x the compute time (or 7x the compute time with the modified GradPaint presented in \ref{speed_section}).
+
+
+\begin{figure*}[htbp]
+  \centering
+    \includegraphics[width=0.6\linewidth]{images/uncur1.jpeg}
+    \caption{Uncurated results on ImageNet (1). Rows 1, 2, 4, 5, 6 display the superior ability of GradPaint to align fine details and global coherence.}
+    \label{fig:uncur1}
+\end{figure*}
+
+\begin{figure*}[htbp]
+  \centering
+    \includegraphics[width=0.6\linewidth]{images/uncur2.pdf}
+    \caption{Uncurated results on ImageNet (2). GradPaint works well on alignement tasks (row 12), but sometimes struggles with non-standard input (row 14). }
+    \label{fig:uncur2}
+\end{figure*}
+
+\begin{figure*}[htbp]
+  \centering
+    \includegraphics[width=0.6\linewidth]{images/uncur3.jpeg}
+    \caption{Uncurated results on ImageNet (3). Our method works well on global coherence (row 29) and generating fine textures requiring alignment (row 31).}
+    \label{fig:uncur3}
+\end{figure*}
+
+\begin{figure*}[htbp]
+  \centering
+    \includegraphics[width=0.6\linewidth]{images/uncur4.pdf}
+    \caption{Uncurated results on ImageNet (4). Our method works well on global coherence (rows 36, 37) but sometimes fails on challenging tasks (row 35). From time to time, the background of the image may poorly influence the content to be generated (row 41).}
+    \label{fig:uncur4}
+\end{figure*}

@@ -238,7 +238,7 @@ Section~\ref{ablations}.
 \section{Experimental Setup}
 
 
-\subsection{Implementation details}
+\subsection{Implementation details}\label{sub_section:implementation_details}
 
 In \ours, we run the optimization loop for $N=160$ steps, which we found enough to 
 transform most images. We use a resolution of 288 for encoding images with VQ-GAN,
@@ -479,52 +479,7 @@ StyleCLIP iteratively updates the StyleGAN2 latent representation to maximize th
 \subsection{Assets}
 
 We provide a list of the assets used in our work (datasets, code, and models) in
- Table \ref{tab:links} (links) and Table \ref{tab:licences} (licences).
-
-
-\begin{table*}
-\center
-\begin{tabular}{lll}
-\toprule
-\textbf{Asset Name} & \textbf{Link} \\
-\midrule
-ImageNet & https://www.image-net.org \\
-Cars & https://ai.stanford.edu/~jkrause/cars/car\_dataset.html \\
-LPIPS & https://github.com/richzhang/PerceptualSimilarity \\
-FID & https://github.com/mseitzer/pytorch-fid \\
-DeiT & https://github.com/facebookresearch/deit \\
-CLIP & https://github.com/openai/CLIP \\
-VQ-GAN & https://github.com/CompVis/taming-transformers \\
-IC-GAN & https://github.com/facebookresearch/ic\_gan \\
-StyleGAN2 & https://github.com/justinpinkney/awesome-pretrained-stylegan2 \\
-e4e & https://github.com/omertov/encoder4editing \\
-\bottomrule
-\end{tabular}
-\caption{List of asset links.}
-\label{tab:links}
-\end{table*}
-
-\begin{table*}
-\center
-\begin{tabular}{lll}
-\toprule
-\textbf{Asset Name} & \textbf{Asset type} & \textbf{License} \\
-\midrule
-ImageNet & Images & https://www.image-net.org/download.php \\
-Cars & Images & https://ai.stanford.edu/~jkrause/cars/car\_dataset.html\\
-LPIPS & Code and Models & BSD-2-Clause License \\
-FID & Code and Models & Apache-2.0 License \\
-DeiT & Code and Models & Apache License 2.0 \\
-CLIP & Code and Models & MIT License \\
-VQ-GAN & Code and Models & MIT License \\
-IC-GAN & Code and Models & Attribution-NonCommercial 4.0 International \\
-StyleGAN2 & Code and Models & https://github.com/justinpinkney/awesome-pretrained-stylegan2 \\
-e4e & Code &  MIT License \\
-\bottomrule
-\end{tabular}
-\caption{List of asset licenses.}
-\label{tab:licences}
-\end{table*}
+the Appendix in~\ref{sec:FlexIt assets}.
 
 
 \section{Qualitative Results}
@@ -784,7 +739,7 @@ In Table~\ref{table:ablations}, we detail the ablation experiments for all FlexI
 \end{table}
 
 
-\subsection{CLIP embedding module} 
+\subsection{CLIP embedding module and Data Augmentations} 
 We study how different choices of \ac{CLIP} image encoders impact the \ac{CSFID} score. 
 Our default configuration involves two ResNet-based networks and one ViT-based network 
 to embed the image in the \ac{CLIP} space. 
@@ -793,9 +748,7 @@ and also using all available pre-trained \ac{CLIP} networks, which comprises a V
  ViT-B/32, a ResNet50, ResNet50$\times$4 and ResNet50$\times$16,
   see~\citep{radford2021learning} for details on the modules.
 For each \ac{CLIP} network configuration, we experiment with  either  not using data 
-augmentation, or using $d \in\{ 1, 8, 32\}$ augmentations.
-We apply basic geometric augmentations that are commonly used to train image 
-classification networks (more details in appendix). \todo{add appentix}
+augmentation, or using $d \in\{ 1, 8, 32\}$ augmentations, as described in~\ref{sub_section:implementation_details}.
 Each of the $N_\textrm{nets}$ \ac{CLIP} networks sees a different augmentation in each of 
 the $N_\textrm{steps}$ optimization steps,  resulting in a total of
  $d \times N_\textrm{nets} \times N_\textrm{steps}$ augmentations of the input image.
@@ -973,17 +926,19 @@ detrimental for image quality.
 While our method  often offers compelling results, it can also fail in many cases, 
 as shown in Figure~\ref{fig:failures}. While our choice of hyperparameters work well 
 globally, specific images may respond poorly to the regularization parameters, as shown 
-in the first three columns of Figure~\ref{fig:failures}. Secondly, our method is limited to the capacities 
-of the multimodal embedding space, which is limited to 
+in the first three columns of Figure~\ref{fig:failures}. Our method is limited to the capacities 
+of the multimodal embedding space \ac{CLIP}, which, although more semantic than the the pixel space, 
+can still be prone to overfitting despite our regularizers, as shown in Figure~\ref{fig:failures} (e) 
+and Figure~\ref{fig:visuresu} (last two columns). Moreover, because \ours depends on \ac{CLIP}, 
+it could also inherit its biases,
+such as misclassifying human faces into non-human or crime-related categories, and 
+producing gender biased associations. Our editing method could reflect such biases if 
+prompted transformations such as doctor $\rightarrow$ newscaster.
 
-show representative failure cases for our method, due to either the regularization 
- method or the multimodal embedding space.
-
- Our method works best for semantic translation when the input image provides guidance,
- but has difficulties synthesizing realistic novel objects from scratch. 
-
-Moreoever, while we studied transformations that change the class or color of the main 
-object in a scene, other transformations of interest could consider changing the 
+Our method 
+works best for semantic translation when the input image provides guidance,
+ but has difficulties synthesizing realistic novel objects from scratch. Other transformations 
+ of interest could consider changing the 
 action of a subject (person walking \vs  running), changing object attributes, 
 adding or deleting objects, or consider more elaborate textual descriptions which 
 require non-trivial grounding in the image (``change the color of car parked next to 
@@ -1011,32 +966,26 @@ right data and evaluation metrics.
 
 \section{Conclusion}
 
-\paragraph{Contributions}
-We propose \ours, a novel method for semantic image translation.
-By relying on an autoencoder latent space, rather than specialized GAN latent spaces,
-it can operate on 
-a wide range of images. 
-Using a general pre-trained multi-modal embedding space provides  flexibility, giving 
-\ours the ability to process free-text transformation queries without training. We  
-also propose an evaluation protocol for semantic image translation, based on ImageNet,
+ We propose \ours, a novel method for semantic image translation.
+ We also propose an evaluation protocol for semantic image translation, based on ImageNet,
  which we use to thoroughly evaluate our approach and its components.
+ We have shown that with well-studied regularizers, we can give editing capabilities 
+ to a non-generative model (the autoencoder of VQ-GAN). This allows us to circumvent the 
+ problems inherent to \ac{GAN} inversion, as seen in Chapter~\ref{chapter:magec}.
+ By relying on an autoencoder latent space, rather than specialized GAN latent spaces,
+ it can operate on a wide range of images. Using a general pre-trained multi-modal 
+ embedding space provides  flexibility, giving 
+ \ours the ability to process free-text transformation queries without training.
 
-
-\paragraph{Broader impacts}
-As our algorithm relies on \ac{CLIP} for editing, it could potentially inherit its biases. 
-The authors of \ac{CLIP} have demonstrated that their model is subject to fairness issues 
-such as misclassifying human faces into non-human or crime-related categories, and 
-producing gender biased associations. Our editing method could reflect such biases if 
-prompted transformations such as doctor $\rightarrow$ newscaster, although we have not
- observed experimental evidence of this. A potential bias mitigation strategy would be 
- to add constraints with \ac{CLIP} prompts to control bias before and after editing.
-
-Our model provides new capabilities to an expanding set of image editing and synthesis 
-tools based on deep generative models. As any generative image model, synthetic images 
-generated by our method can potentially be used in unintended ways with undesirable 
-effects. We believe however that open publication of research in this area contributes 
-to a good understanding of such techniques, and can aid the community in efforts to 
-develop method that detect unauthentic content. 
+ However, because our image generator (the decoder of VQ-GAN) is not a generative model, 
+ realistic edits are not guaranteed. Later and concurrent works to this paper focus greatly 
+ on Diffusion Models. In concurrent early works with editing with \ac{DDPM}s,~\cite{meng2022sdedit}, 
+ for example, show that by modifying an image with strokes and then simply noising and denoising it,
+ we can leverage the generative capacities of the \ac{DDPM} and turn the stroke into a realistic edit. 
+ This easy inversion scheme, combined with using an actual generative prior, makes Diffusion Models 
+ a perfect candidate for our work, not prone to the weaknesses of neither Chapter~\ref{chapter:magec}
+ nor this chapter. In the next chapter, we will explore these models for the general task of 
+ image inpainting.
 
 
 
