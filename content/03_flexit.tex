@@ -322,7 +322,7 @@ report evaluation metrics on the test set.
 
 \renewcommand\cellgape{\Gape[1pt]}
 \begin{table*}
-\footnotesize
+\tiny
 \center
 \begin{tabular}{lll}
 \toprule
@@ -470,7 +470,7 @@ VQ-GAN autoencoder.
 We also evaluate  StyleCLIP~\citep{patashnik2021styleclip}, the most relevant 
 text-driven image transformation algorithm from the literature. We consider the 
 version most similar to our method that embeds images with an ImageNet-trained 
-StyleGAN2 (see source in next section). We train our own e4e encoder~\cite{tov2021designing} 
+StyleGAN2 (see source in next section). We train our own e4e encoder~\citep{tov2021designing} 
 to embed images into this latent space.
 StyleCLIP iteratively updates the StyleGAN2 latent representation to maximize the similarity
   with a given text in the \ac{CLIP} latent space. Finally, we evaluate
@@ -479,7 +479,7 @@ StyleCLIP iteratively updates the StyleGAN2 latent representation to maximize th
 \subsection{Assets}
 
 We provide a list of the assets used in our work (datasets, code, and models) in
-the Appendix in~\ref{sec:FlexIt assets}.
+the Appendix in~\ref{sec:FlexIt assets}. \todo{fix reference}
 
 
 \section{Qualitative Results}
@@ -494,14 +494,14 @@ transformations for images from the Stanford Cars
 dataset~\citep{KrauseStarkDengFei-Fei_3DRR2013} in Figure~\ref{fig:cars30k}.
 
 
-\begin{figure}
+\begin{figure*}[H]
     \includegraphics[width=\textwidth]{images/flexit/assets/demo1.pdf}
     \captionof{figure}{\ours transformation examples. From top to bottom: input image, transformed image, and text query.
     }
     \label{fig:main_demo}
-\end{figure}
+\end{figure*}
 
-\begin{figure*}
+\begin{figure*}[H]
     \centering
     \includegraphics[width=\linewidth]{images/flexit/assets/main_exs.pdf}
     \caption{Transformation examples with \ours on ImageNet images. 
@@ -519,7 +519,7 @@ dataset~\citep{KrauseStarkDengFei-Fei_3DRR2013} in Figure~\ref{fig:cars30k}.
 \end{figure*}
 
 
-\begin{figure}
+\begin{figure*}
     \centering
     \vspace{-1em}
     \includegraphics[width=\linewidth]{images/flexit/assets/cars2.pdf}
@@ -527,12 +527,12 @@ dataset~\citep{KrauseStarkDengFei-Fei_3DRR2013} in Figure~\ref{fig:cars30k}.
     dataset (last row). Although GAN-based images have better details like the wheels, they are farther away from the input images.}
     
     \label{fig:cars30k}
-\end{figure}
+\end{figure*}
 
 Finally, Figure~\ref{fig:steps} shows intermediate transformation results with FlexIT for 0, 8, 16, 32 and 160 optimization steps. 
 The result after zero optimization steps shows the effect of autoencoding the input image, without changing the latent representation.
 
-\begin{figure*}[t!]
+\begin{figure*}[H]
     \center
     \includegraphics[width=\linewidth]{images/flexit/assets/steps.pdf}
     \caption{Intermediate transformation results obtained with FlexIT. Note that most edits only require 32 steps to be completed; some edits benefit from longer optimization schemes, such as the  spider and the banjo.
@@ -595,7 +595,32 @@ ManiGAN works well when trained on narrow domains with color change transformati
 requests, but we find that it does not produce convincing edits when trained on 
 ImageNet.
 
-\begin{figure}
+
+We argue that our evaluation protocol is well-suited for evaluating text-driven image editing because it 
+(1): offers a list of sensible transformation queries and (2) offers a method for evaluating the quality and accuracy 
+of the generated result. However, to further compare to ManiGAN~\citep{li2020manigan}, we propose to compare our method 
+while following their 
+evaluation protocol used in their paper. This consists in using the COCO dataset and (1) choosing 
+\textit{random} COCO captions/image pairs and thus leading to noisy transformations and (2) calculating the image-text similarity
+ score which was used as a loss term during their training, leading to bias in the final scores.
+ We show 
+ in Tab.\ \ref{results_manigan} that even with this COCO evaluation, FlexIT improves upon the scores of ManiGAN by a large margin.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l|l|}
+\cline{2-5}
+                              & \multicolumn{1}{c|}{IS↑} & \multicolumn{1}{c|}{SIM↑} & \multicolumn{1}{c|}{DIFF↓}             & \multicolumn{1}{c|}{MP↑} \\ \hline
+\multicolumn{1}{|l|}{ManiGAN} & 14.96                   & 0.087                    & 0.216                                 & 0.068                   \\ \hline
+\multicolumn{1}{|l|}{FlexIT}  & \textbf{18.19}          & \textbf{0.177}           & {\color[HTML]{000000} \textbf{0.146}} & \textbf{0.151}          \\ \hline
+\end{tabular}
+\caption{ManiGAN evaluation on random transformation requests from COCO.}
+\label{results_manigan}
+\end{table}
+
+
+
+\begin{figure}[H] 
     \centering
     \vspace{-1em}
     \includegraphics[width=\linewidth]{images/flexit/assets/classwise.pdf}
@@ -615,28 +640,6 @@ Generally, transformations among  natural objects are more successful than
  transformations.
 
 
-We argue that our evaluation protocol is well-suited for evaluating text-driven image editing because it 
-(1): offers a list of sensible transformation queries and (2) offers a method for evaluating the quality and accuracy 
-of the generated result. However, to further compare to ManiGAN~\citep{li2020manigan}, we propose to compare our method 
-while following their 
-evaluation protocol used in their paper. This consists in using the COCO dataset and (1) choosing 
-\textit{random} COCO captions/image pairs and thus leading to noisy transformations and (2) calculating the image-text similarity
- score which was used as a loss term during their training, leading to bias in the final scores.
- We show 
- in Tab.\ \ref{results_manigan} that even with this COCO evaluation, FlexIT improves upon the scores of ManiGAN by a large margin.
-
-\begin{table}[H]
-\small
-\centering
-\begin{tabular}{l|l|l|l|l|}
-\cline{2-5}
-                              & \multicolumn{1}{c|}{IS↑} & \multicolumn{1}{c|}{SIM↑} & \multicolumn{1}{c|}{DIFF↓}             & \multicolumn{1}{c|}{MP↑} \\ \hline
-\multicolumn{1}{|l|}{ManiGAN} & 14.96                   & 0.087                    & 0.216                                 & 0.068                   \\ \hline
-\multicolumn{1}{|l|}{FlexIT}  & \textbf{18.19}          & \textbf{0.177}           & {\color[HTML]{000000} \textbf{0.146}} & \textbf{0.151}          \\ \hline
-\end{tabular}
-\caption{ManiGAN evaluation on random transformation requests from COCO.}
-\label{results_manigan}
-\end{table}
 
 
 \section{Ablation studies\label{ablations}}
@@ -691,7 +694,6 @@ Corresponding qualitative examples are shown in Figure~\ref{fig:demo_reg}.
 In Table~\ref{table:ablations}, we detail the ablation experiments for all FlexIT parameters.
 
 \begin{table}
-\small
 \center
 \begin{tabular}{lrrrr}
 \toprule
@@ -766,13 +768,13 @@ In our other experiments we use the three smallest (and fastest) \ac{CLIP} netwo
 default setting.
 
 
-\begin{figure}
+\begin{figure*}
     \centering
     \includegraphics[width=.9\linewidth]{images/flexit/assets/encoder_evol.pdf}
     \caption{\ac{CSFID} and \ac{LPIPS} scores across iterations, using different latent spaces, or raw pixels, for optimization. 
     }
     \label{fig:encoders}
-\end{figure}
+\end{figure*}
 
 
 
@@ -781,7 +783,6 @@ multimodal encoder. This table also reports the runtime needed for each algorith
 
 
 \begin{table}
-\small
 \center
 \begin{tabular}{lrrrrrr}
 \toprule
@@ -866,7 +867,7 @@ The StyleGAN2 latent space ($\mathcal{W+}$) is bigger, allowing generated images
 be closer to the input images; however its \ac{CSFID} scores are not competitive with the 
 other approaches.
 
-\begin{figure*}[t!]
+\begin{figure*}[H]
     \centering
     \includegraphics[width=0.85\linewidth]{images/flexit/assets/encoder2.pdf}
     \caption{
@@ -883,7 +884,7 @@ other approaches.
 
 \section{Hyperparameter study\label{hparam}}
 
-\begin{figure}
+\begin{figure*}[H]
     \centering
     \includegraphics[width=\linewidth]{images/flexit/assets/hparam_fig.pdf}
     \includegraphics[width=\linewidth]{images/flexit/assets/hparam_acc.pdf}
@@ -893,7 +894,7 @@ other approaches.
     }
     
     \label{fig:hparam_csfid}
-\end{figure}
+\end{figure*}
 
 
 In Figure~\ref{fig:hparam_csfid}, we illustrate the effect of our hyper-parameters on
@@ -946,7 +947,7 @@ the bicycle.''). Importantly, progress in this direction will require to identif
 right data and evaluation metrics. 
 
 
-\begin{figure*}[t!]
+\begin{figure*}[H]
     \center
     \includegraphics[width=\linewidth]{images/flexit/assets/failures.pdf}
     \caption{
