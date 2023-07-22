@@ -1,6 +1,9 @@
 \chapter{Editing images with a pre-trained GAN}
 \label{chapter:magec}
 
+\newpage
+\minitoc
+
 %\newcommand{\mcL}{\mathcal{L}} \newcommand{\vx}{\mathbf{x}} \newcommand{\vh}{\mathbf{h}}
 %\newcommand{\vy}{\mathbf{y}}
 \newcommand{\tableindent}{\,\,\,\,}
@@ -382,12 +385,12 @@ Concretely, we train $\linknet$ using the same exact loss as the deep image desc
 
 
 
-\begin{figure}
+\begin{figure*}
   \centering
     \includegraphics[width=\textwidth]{images/magec/training_protocol9.png}
     \caption{Our proposed optimization framework. We initialize our $\z$ vector with $\z_0$. Then, we generate the associated image with the pre-trained generator to obtain the image-level loss. We predict the latent-level descriptor $d'$ with our pre-trained $\linknet$. We add a consistency loss of these features with the ``ground-truth'' features $d$ evaluated from our feature-extractor network $F$. We add another consistency loss over the edited descriptors (using a differentiable editor $e$) and the ``ground-truth'' edits which we obtain by modifying $d$. This MAGEC loss gives us latent-level optimization which promotes editability and an in-domain output vector.}
     \label{fig:training_protocol}
-\end{figure}
+\end{figure*}
 
 
 \subsection{MAGEC Loss}
@@ -609,7 +612,7 @@ We compare our method with Image2StyleGAN++ \citep{abdal2020}, the state-of-the-
     in the same way as us.
 
 
-\begin{figure}
+\begin{figure*}
   \centering
     \includegraphics[width=\textwidth]{images/magec/im2st_comparison.png}
     \caption{Comparison of our method vs Im2StyleGAN++. Left: original images. Top rows: 
@@ -619,10 +622,10 @@ We compare our method with Image2StyleGAN++ \citep{abdal2020}, the state-of-the-
     to editing operations, suggesting that it follows the native distribution of StyleGAN
      more closely.}
     \label{fig:im2stcomparison}
-\end{figure}
+\end{figure*}
 
 
-\begin{figure}
+\begin{figure*}
   \centering
   \begin{subfigure}[b]{0.45\textwidth}
       \centering
@@ -639,7 +642,7 @@ We compare our method with Image2StyleGAN++ \citep{abdal2020}, the state-of-the-
   \end{subfigure}
   \caption{Average latent vectors from two different pre-trained StyleGANs}
   \label{fig:stylegan_averages}'
-\end{figure}
+\end{figure*}
 
 
 
@@ -652,12 +655,12 @@ our method is visually  superior to Im2StyleGAN \citep{abdal2020} in terms of
 editing quality. While \cite{abdal2020} produces artifacts and blur during edits, our
  method produces sharp, realistic edits.
 
- \begin{figure}
+ \begin{figure*}
   \centering
     \includegraphics[width=\textwidth]{images/magec/teaser2.png}
     \caption{From left to right: original image, projection in latent space using \magec loss, various edits (GANSpace, InterfaceGAN and StyleFlow respectively). Edits are of high-quality, and conform to expectations of the various editing methods. Best viewed zoomed.}
     \label{fig:teaser}
-\end{figure}
+\end{figure*}
  
 
 
@@ -716,40 +719,40 @@ latent code encodes some sort of ``shape'' which roughly predicts
 
 
 
-   \begin{figure}
+   \begin{figure*}
     \centering
       \includegraphics[width=0.93\textwidth]{images/magec/interfacegan_large.jpeg}
       \caption{InterfaceGAN \citep{shen2020} edits using various inversion methods.  Our method gives the intended edits with high-quality results. Best viewed zoomed and in color.}
       \label{fig:interfacegan_supp}
-  \end{figure}
+  \end{figure*}
   
-  \begin{figure}
+  \begin{figure*}
     \centering
       \includegraphics[width=\textwidth]{images/magec/styleflow_large.jpeg}
       \caption{StyleFlow \citep{abdal2020styleflow} edits using various inversion methods. Remark that here, the edits should be \textbf{cumulative}. Our \magec loss helps to produce accurate reconstructions as well as the intended edits with high-quality results.}
       \label{fig:styleflow_supp}
-  \end{figure}
+  \end{figure*}
   
-  \begin{figure}
+  \begin{figure*}
     \centering
       \includegraphics[width=\textwidth]{images/magec/ganspace_large.jpeg}
       \caption{GANSpace \citep{harkonen2020ganspace} edits using various inversion methods. Image2StyleGAN++'s inversion method produces accurate reconstructions, but distorted and low-quality edits. Using our \magec loss greatly helps with reconstruction, but also helps to produce the intended change (notice \emph{male} / \emph{female} edits in particular). Best viewed zoomed and in color.}
       \label{fig:ganspace_sup}
-  \end{figure}
+  \end{figure*}
   
-  \begin{figure}
+  \begin{figure*}
     \centering
       \includegraphics[width=\textwidth]{images/magec/interpol_large.jpeg}
       \caption{Interpolations \citep{karra2019stylegan} using various inversions. Take extra notice of the reconstructions, where our \magec loss clearly helps. In the first edit, only our edit gives a beard which clearly progressively disappears (rather than increasing then decreasing), suggesting stronger semantic information in the inverted latent. In the last case, notice the gradual background changes in the third set with our method, compared to the harsher change of Im2StyleGAN++'s edit.  Best viewed zoomed and in color.}
       \label{fig:interpol_sup}
-  \end{figure}
+  \end{figure*}
   
-  \begin{figure}
+  \begin{figure*}
     \centering
       \includegraphics[width=0.835\textwidth ]{images/magec/cars_super_large.pdf}
       \caption{GANSpace \citep{harkonen2020ganspace} edits with various inversions. Image2StyleGAN++'s method produces good reconstructions but distorted edits. Our method helps in preserving the car model during reconstruction and edits. Remark the top red car when rotated: our method preserves the \emph{sports car} style. Remark that the \emph{Audi} logo of the white car is also conserved when rotating. Finally, the bottom red car reveals that our method consistently maintains the correct car model (\emph{BMW}) during reconstruction and edits. Best viewed zoomed and in color.}
       \label{fig:cars}
-  \end{figure}
+  \end{figure*}
 
 \section{Quantitative Evaluation} 
 
@@ -909,20 +912,20 @@ strong preference for our method.
  
  
 
- \begin{figure}
+ \begin{figure*}
   \centering
   \includegraphics[width=0.8\textwidth]{images/magec/edit_consistency5.png}
   \caption{Calculating $ecs$. We perform 2 projections per $ecs$: 1 from the original image, and one from the edited latent. A better (lower) $ecs$ means that $d_3$ is smaller than $d_1$ and $d_2$}
   \label{fig:ecs_intuition}
- \end{figure}
+ \end{figure*}
 
 
-\begin{figure}
+\begin{figure*}
   \centering
   \includegraphics[width=\textwidth]{images/magec/edit_consistencies2.png}
   \caption{Best and worst $ecs$ scores for a given projection method. Here, the editing method is \emph{"to male"} with GANSpace. Notice how the worst scores correspond to poorer editability, for example, the woman in the second row on the right did not transform into a man.}
   \label{fig:ecs_examples}
-\end{figure}
+\end{figure*}
 
 
 
@@ -974,7 +977,7 @@ strong preference for our method.
   \label{tab:userstudyresults}
 \end{table}
 
-\begin{figure}
+\begin{figure*}
   \centering
   \includegraphics[width=0.8\textwidth]{images/magec/user_interface_2.png}
   \caption{Interface provided for human evaluators. 30 photography experts 
@@ -982,7 +985,7 @@ strong preference for our method.
    to choose their preferred edited image out of two choices. The user 
    judged for five minutes and an average of 30 edit pairs were judged per user.}
   \label{fig:user_interface}
-\end{figure}
+\end{figure*}
 
 
 
@@ -1005,7 +1008,7 @@ and some semantic concepts  become lost. As we see in the bottom row of
 Fig.~\ref{fig:problem_images}, the keffiyeh becomes semantically represented 
 as hair.
 
-\begin{figure}
+\begin{figure*}
 \centering
 
     \includegraphics[width=0.75\textwidth]{images/magec/problem_images.png}
@@ -1017,8 +1020,7 @@ space loss oppose each other: the input image is too out-of-domain. In the
  (the keffiyeh). The projection represents the keffiyeh as hair, 
  evidenced by the subsequent edits (\emph{straight hair}, \emph{old age}).}
     \label{fig:problem_images}
-%\vspace{-0.4cm}
-\end{figure}
+\end{figure*}
 
 
 
@@ -1061,6 +1063,6 @@ within its manifold. Because only small tweaking is required to adapt the pre-tr
 Nevertheless, \ac{GAN} inversion methods are still limited to images from restricted 
 domains of a pre-trained \ac{GAN}, largely limiting their use-case to practical settings. 
 In the next chapter, we thus try to circumvent inversion completely and examine image 
-editing through the lense of optimizing a VQGAN \citep{esser2021taming} encoded vector 
+editing through the lense of optimizing a VQ-GAN \citep{esser2021taming} encoded vector 
 before decoding the edited embedding. 
 

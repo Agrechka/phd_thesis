@@ -58,6 +58,7 @@
 % - septembre 
 
 
+\todo{add note on GigaGAN (CVPR 2023) and StyleGANXL}
 
 
 In this chapter, we will first give a quick overview of Neural Network Learning before 
@@ -158,7 +159,7 @@ but these models are out of the scope of our thesis.
   \end{figure}
 
 
-\subsection{Variational Auto-Encoders}
+\subsection{Variational Auto-Encoders}\label{section:chapter1_variational_auto_encoders}
 
 Introduced by  \cite{Kingma2014} and \cite{pmlr-v32-rezende14}, \ac{VAE}s are based on the variational 
 inference framework. This framework will be presented here and then later be brought to the context of \ac{DL}.
@@ -309,7 +310,7 @@ discriminator can simply ressemble a CNN-classifier architecture.
 For this reason, there is nothing stopping us from having hybrid architectures which combines the 
 typical encoder-decoder of a 
 \ac{VAE} with a discriminator and a \ac{GAN} loss, as has been done by several works \citep{larsen2016autoencoding, 
-xian2019f, esser2021taming}. In the case of images, Figure \ref{fig:dcgan} shows a typical \ac{GAN} architecture based 
+donahue17iclr, dumoulin17iclr, xian2019f, esser2021taming}. In the case of images, Figure \ref{fig:dcgan} shows a typical \ac{GAN} architecture based 
 on a \ac{CNN}, coined \ac{DCGAN} \citep{dcgan}. This basic architecture uses upsampling blocks 
 (composed of deconvolutional layers) for the generator and downsampling blocks (composed of convolutional layers)
 for the discriminator, which further works build off from. 
@@ -351,8 +352,8 @@ this occurs less often given the fact that the discriminator's job is inherently
 
 \minipar{Mode Collapse} Mode collapse refers to the generator collapsing to only produce one sample or one family of
 similar samples. In this case, a single genered sample which is classified as realistic by the discriminator will 
-push the generator towards this sample. Indeed, the samples are treated independently, and the generator will have no penalty 
-in producing similar samples. 
+push the generator towards this sample. The adversarial nature of a \ac{GAN} often pushes it to drop modes which are 
+deemed less realistic.
 
 \minipar{Unstructured latent space}
 Because the latent space is fixed instead of learned, the latent space of a GAN can be unstructured 
@@ -396,7 +397,9 @@ Concretely, for a single sample, we calculate its distance (in a feature space) 
  this by performing standard deviation in the feature space and concatenates these values to the input of 
  the discriminator \citep{karras2018progressive}. Because the discriminator will 
  have access to extra information (very small distances correlate with fake samples), the generator will 
- be encouraged to produce diverse samples. 
+ be encouraged to produce more diverse samples. However, this approach depends on the batch size, which, 
+ in the case of high-resolution synthesis, is quite low to accomodate the memory constraints of large images.
+ Moreover, it is not immune to the \ac{GAN} dropping some modes. 
 
  \minipar{Spectral Normalization} Introduced in \cite{miyato2018spectral}, spectral normalization 
  consists in constraining the weights of the discriminator during training. This improves 
@@ -537,7 +540,7 @@ results.
 
 \subsection{Framework}
 
-Introduced by \cite{sohl2015deep} and imporved by \cite{ho2020denoising}, the \ac{DDPM} is a class 
+Introduced by \cite{sohl2015deep} and improved by \cite{ho2020denoising}, the \ac{DDPM} is a class 
 of generative models trained to remove various levels of noise added to an input training image, as illustrated in Fig.\ref{fig:gen_models}.
 Given an input image $\x_0$, the \emph{forward process} refers to the creation of the latent variables 
 $\x_1, ..., \x_T$ by gradually noising the latents incrementally with gaussian noise, controlled by 
@@ -787,16 +790,25 @@ vector which produces images of a woman with glasses. Works in latent space mani
 and StyleGAN2 \citep{karra2020stylegan2} with their powerful semantic, localized and 
 disentangled latent space. \cite{harkonen2020ganspace} showed that performing PCA in the 
 latent space of 
-StyleGAN allows localization and edition of high-level concepts, like gender for faces or 
-color for cars. \cite{shen2020interfacegan} and \cite{zhuang2021enjoy} use auxiliary networks 
-which predict image attributes and learn the mapping between latent vectors and image features. \cite{zhang2021datasetgan}
+a \ac{GAN} allows localization and edition of high-level concepts, like gender for faces or 
+color for cars. Similarly,
+\cite{voynov20icml} shows that we can discover important directions in the latent space by 
+training a network to predict the shift that was used in the latent code to produce two generated images. 
+\cite{shen2020interfacegan} and \cite{zhuang2021enjoy} use auxiliary networks 
+which predict image attributes and learn the mapping between latent vectors and image features.
+\cite{Goetschalckxganalyze} also uses an auxiliar network which predicts the aesthetics of an 
+image. They train a simple network which learns to modify the latent code of BigGAN \citep{brock2018large}
+such that the resulting image is either less or more memorable.
+ \cite{zhang2021datasetgan}
 shows that by manually semantically segmenting a few images, we can learn how to automatically 
 segment newly generated images just from their latent code, thus creating a dataset "for free".
  \cite{ling2021editgan} then leverages this work to edit 
 the images by modifying the corresponding segmentation map, and then finding the corresponding latent code to regenerate 
 the edited image. \cite{tewari2020stylerig} and \cite{zhang2020image} show that StyleGAN2's latent code 
-learns 3D information which can be leveraged to perform 3D edits of the input image. Although 
-these works typically focus on StyleGAN, \cite{khrulkov2022understanding} shows that the latent code of 
+learns 3D information which can be leveraged to perform 3D edits of the input image.
+
+ Although 
+these works typically focus on \ac{GAN}s, \cite{khrulkov2022understanding} shows that the latent code of 
 \ac{DDPM}s is also of interest - using the same latent code for totally different 
 \ac{DDPM}s produce similar images in terms of semantics and colors, showing that \ac{DDPM}s generate 
 images from the latent code through optimal transport.
@@ -850,7 +862,9 @@ real dataset. Finally, this score specifically tailers to ImageNet classes, and
 makes less sense to evaluate on specific domains like human faces or bedrooms. This metric
  is typically not used anymore.
 
-\minipar{FID}
+\minipar{FID}\label{sec:related_fid}
+
+
 The \ac{FID} score \citep{heusel2017gans} was proposed to adress these drawbacks and 
 was found to be more consistent with human evaluation. This score uses a pre-trained 
 classifier (again, typically the Inception V3 network) as a feature-extractor for the 
@@ -863,22 +877,45 @@ The higher the sample size, the more reliable \ac{FID}, and it requires a sample
 the size of the InceptionV3 feature space ($2048$) for a somewhat accurate estimate. 
 For datasets smaller than this minimum size, the \textbf{\ac{SFID}} was proposed 
 \citep{kim2020simplified}, which does
- not take into account the offdiagonal terms in the feature covariance matrix. Finally, it is 
- possible to evalute a separate FID score for each class separately \citep{benny2021evaluation}, known as the 
- \ac{CFID} or \ac{CS-FID} for smaller sample sizes.
-\ac{FID}
-still faces the drawbacks of using an ImageNet pre-trained classifier for performance, which 
+ not take into account the offdiagonal terms in the feature covariance matrix
+ to avoid numerical instability. 
+ More formally, let $\mu^r$ and $\sigma^r$ be the mean and standard deviation of 
+inception features for the real images, and $\mu^s$ and $\sigma^s$ for the synthetic 
+images. The \ac{SFID} \cite{kim2020simplified} is computed as 
+
+
+\begin{equation}
+      SFID(\alpha) = \lVert \mu^r - \mu^s \rVert ^2 + \alpha \lVert\sigma^r - \sigma^s\rVert^2.
+      \end{equation}
+ 
+ Finally, the \ac{CFID} (respectfully, \ac{CSFID}) is computed in the same manner as the \ac{FID}
+ (respectfully, \ac{SFID}) but for each target class separately, and then averaging the resulting scores.
+
+ Specifically, with $\mu^r_c$ and $\sigma^r_c$ the mean and standard deviation of inception 
+ features for the real images belonging to class $c$, and $\mu^s_c$ and $\sigma^s_c$ 
+ for the synthetic images, we have
+\begin{equation}
+CSFID(\alpha) = \frac{1}{|C|} \sum_c \lVert \mu^r_c - \mu^s_c \rVert ^2 + \frac{\alpha}{|C|} \sum_c \lVert\sigma^r_c - \sigma^s_c\rVert^2.
+\label{eq:sfid}
+\end{equation}
+where $\alpha$ is a parameter to choose. 
+ 
+ 
+
+
+\ac{FID} and its variants
+still face the drawbacks of using an ImageNet pre-trained classifier for performance, which 
  makes less sense for restricted domains like faces or very large datasets like LAION-5B \citep{schuhmann2022laion}, 
  although this can be circumvented by using 
 a domain-specific pre-trained classifier. In this case, results between papers are not easily 
-comparable and re-calculation is necessary \citep{dhariwal2021diffusion}. 
+comparable and re-calculation is necessary~\citep{dhariwal2021diffusion}. 
 
-\minipar{Precision and Recall}  The Precision and Recall metrics were proposed by \cite{sajjadi2018assessing} and 
-later improved by \cite{kynkaanniemi2019improved}. Let's consider the two manifolds of real images $P_r$ and 
+\minipar{Precision and Recall}  The Precision and Recall metrics were proposed by~\cite{sajjadi2018assessing} and 
+later improved by~\cite{kynkaanniemi2019improved}. Let's consider the two manifolds of real images $P_r$ and 
 generated images $P_g$.
 Precision, similar to Fidelity, refers to the chance that a generated image looks real (falls within $P_r$) while 
 Recall, similar to Diversity, refers to the chances that a real image can be generated (falls within $P_g$).
-See \ref{fig:precision_recall} for a visualization. While the \ac{FID} score aimed to fit a statistical model 
+See~\ref{fig:precision_recall} for a visualization. While the \ac{FID} score aimed to fit a statistical model 
 to define these two distributions $P_g$ and $P_r$, Precision and Recall estimates these distributions 
 using a nearest-neighbor approach. Specifically for a set of $N$ real images
 and $N$ generated images, we first extract their features with a pretrained
@@ -942,17 +979,21 @@ the training data. Also proposed by \cite{alaa2022faithful}, authenticity refers
 a model generates new samples. With  $\alpha$-Precision, $\beta$-Recall and authenticity, \cite{alaa2022faithful}
 shows that we can more reliably evaluate generative models compared to existing approaches. 
 
-\minipar{CLIP similarity} In the case of text-guided image editing, the CLIP similarity score uses the 
-recent dual CLIP encoder \citep{radford2021learning} which measures the distance in the embedded space 
-between the target textual description and the edited image. This score is especially used in recent 
+\minipar{CLIP similarity} \ac{CLIP}~\cite{radford2021learning} introduced a text and image encoder trained 
+jointly on 400M web-crawled image/text pairs 
+with a simple contrastive InfoNCE loss \citep{oord18arxiv}. In the case of text-guided image editing, 
+the \ac{CLIP} similarity score measures the distance in the embedded space 
+between the target textual description and the edited image.  This score is especially used in recent 
 works which perform highly flexible editing \citep{mokady2023null, hertz2022prompt}.
 
-\minipar{LPIPS} 
+\minipar{LPIPS}\label{sec:related_lpips}
 In the case of image editing, we can measure the LPIPS \citep{zhanglpips2018} score between 
-the real image and the edited image. This measures the distance of extracted features between the 
-real image and edited image. While editing should change the image slightly, an 
+the real image and the edited image. It is a weighted $\ell_2$ distance of deep image features, 
+where the weights have been learned to be able to predict human perceptual similarity  between patches.
+This metric was shown to correlate well with human perceptual similarity, unlike other full-reference metrics
+ (like the $\ell_2$ distance between pixels). While editing should change the image slightly, an 
 edited image should generally not deviate profoundly from the input image. This metric 
-is generally used alongside with other metrics which measure image quality. 
+is generally used alongside  other metrics which measure image quality. 
 
 \minipar{Human Evaluation} 
 Human evaluation remains a main way of evaluating image quality.  \cite{hype} 

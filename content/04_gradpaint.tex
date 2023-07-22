@@ -172,7 +172,7 @@ to find adaptation algorithms for downstream tasks without fine-tuning, especial
 
 \begin{document}
 
-\section{\acro{} Method}
+\section{GradPaint Method}
 
 %Given an input image $x_0$ masked out by a binary mask $m$, our goal is to generate a realistic image $x$ such that $x \odot (1-m) = x_0 \odot (1-m)$ and $x \odot m$ is generated.
 
@@ -212,7 +212,7 @@ Alternatively, \cite{song2021scorebased, latentdiffusion, repaint} propose to di
 where $\epsilon \sim \gaussian$ is resampled at each step. This $\x_{t-1}'$ is then used as input for the next denoising step instead of $\x_{t-1}$. We will refer to this method as \textit{combine-noisy} since it combines $\x_{t-1}$ inside the mask with ground truth (noised) pixel values outside the mask.
 
 
-\subsection{\acro{} framework}
+\subsection{GradPaint framework}
 
 
 %MOVE FIG PAR MATT 
@@ -295,7 +295,7 @@ When we minimize this loss, we aim to achieve the smoothest transition possible 
 Since this loss $al(I, M)$  is defined for an image with only one color channel, we simply define the total alignment loss $\mathcal{L}_{al}$ as the average loss over the three color channels for a regular RGB image.
 
 
-\noindent \textbf{\acro ~Update.} Our total loss is defined as:
+\noindent \textbf{GradPaint ~Update.} Our total loss is defined as:
 
 \begin{equation}
 \mathcal{L} = \mathcal{L}_{mse} + \lambda_{al} \mathcal{L}_{al},
@@ -357,7 +357,7 @@ Backpropagating through the diffusion model itself until variable $\x_t$ is a cr
 
 \noindent \textbf{Harmonization.} The effect of the GradPaint update is illustrated in Fig.~\ref{fig:intuition}, 
 which shows the intermediate DDPM predictions for $\hat{\x}_0$ and $\hat{\x}_0'$ at various timesteps. We 
-compare \acro{} with the \textit{combine-noisy} and \textit{combine-image} methods presented in \S\ref{background}, where all three methods share the same DDPM model, parameters and initial noise maps.
+compare GradPaint with the \textit{combine-noisy} and \textit{combine-image} methods presented in \S\ref{background}, where all three methods share the same DDPM model, parameters and initial noise maps.
 These baseline approaches require more steps to integrate the information from the input image, at which point it is often ``too late" to construct a harmonized image - misalignment between the generation and the input image can no longer be corrected. In contrast, for GradPaint, the optimization step on $\x_t$ quickly pushes the merged image $\hat{\x}_0'$ to harmonizes well with the masked input image $\x_0$, producing an inpainting result without alignment artifacts.
 
  %Our method immediately guides the generation in the right direction, harmonizing the merged prediction at every timestep which in turn allows the DDPM to correct misalignment errors.
@@ -366,7 +366,7 @@ These baseline approaches require more steps to integrate the information from t
 \begin{figure}[htbp]
   \centering
     \includegraphics[width=\linewidth]{images/gradpaint/intuition.pdf}
-    \caption{DDPM predictions at different stages (indicated in $\%$) of the denoising process. We compare two baselines (a) and (b) with \acro{} (the two last rows). \acro{} better harmonizes regions inside and outside the inpainting mask right from the beginning of the denoising process.}
+    \caption{DDPM predictions at different stages (indicated in $\%$) of the denoising process. We compare two baselines (a) and (b) with GradPaint (the two last rows). GradPaint better harmonizes regions inside and outside the inpainting mask right from the beginning of the denoising process.}
     \label{fig:intuition}
 \end{figure}
 
