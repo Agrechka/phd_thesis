@@ -511,12 +511,17 @@ In 2019, however, significant progress on this front was made with BigGan \citep
 which achieved state-the-art results on ImageNet, significantly outperforming previous methods. They 
 used a residual architecture, \ac{GAN} hinge loss \citep{lim2017geometric} (a variant of the adversarial loss),
  spectral normalization \citep{miyato2018spectral},
-and class-conditional Batch Normalization \cite{ioffe2015batch}, scaling up the layer sizes, 
-and increasing 
-batch size significantly improves performance. BigGAN remained state-of-the-art for
+ class-conditional Batch Normalization \cite{ioffe2015batch}, scaling up the layer sizes, 
+and increased
+batch size. BigGAN remained state-of-the-art for
  ImageNet synthesis 
 for several years until diffusion models outperformed them, which we describe in the
- next section. 
+ next section. Class-conditioning helps provide the \ac{GAN} with additional information, helping training stability and mode-collapse.
+ If, however, data labels are not available, unconditional \ac{GAN}s struggle to represent a diverse distribution like ImageNet.
+ To combat this, \cite{casanova21nips} proposed Instance-GAN, where the generator and discriminator are 
+ conditioned on a single SwAV~\citep(caron20nips) embedding of a real image. The discriminator then only observes the $K$ nearest-neighbors 
+ as "real samples" while the generator aims at generating images close to the input image. Generating a variety 
+ of samples is possible in this way even without labels.
 
 
 
@@ -794,7 +799,7 @@ a \ac{GAN} allows localization and edition of high-level concepts, like gender f
 color for cars. Similarly,
 \cite{voynov20icml} shows that we can discover important directions in the latent space by 
 training a network to predict the shift that was used in the latent code to produce two generated images. 
-\cite{shen2020interfacegan} and \cite{zhuang2021enjoy} use auxiliary networks 
+\cite{shen2020} and \cite{zhuang2021enjoy} use auxiliary networks 
 which predict image attributes and learn the mapping between latent vectors and image features.
 \cite{Goetschalckxganalyze} also uses an auxiliar network which predicts the aesthetics of an 
 image. They train a simple network which learns to modify the latent code of BigGAN \citep{brock2018large}

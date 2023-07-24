@@ -10,7 +10,6 @@
 \ifthenelse{\boolean{skipFlexit}}{\endinput}{}
 
 \todo{in pres: in practice: how well are the text and image pairs aligned? can i perform vector arithmetic? let's see what it does?}
-\todo{talk about IC-GAN}
 
 \section{Introduction}
 
@@ -47,10 +46,6 @@ of text-driven image editing.
 
 
 \section{Related Work}
-
-% talk about Instance GAN
-
-% takl about manigan
 
 
 \paragraph{Image latent space}
@@ -131,7 +126,7 @@ Finally, to ensure that the modified image remains similar to the input, we cont
 its distance to the input image with the LPIPS perceptual distance~\citep{zhanglpips2018}
  computed with a VGG~\citep{simonyan2014very} backbone.
 
- \begin{figure*}
+ \begin{figure*}[h!]
     \centering
     \vspace{-1em}
     \includegraphics[width=\linewidth]{images/flexit/assets/method.pdf}
@@ -201,7 +196,7 @@ we normalize the gradient before the update.
 
 
 
-\begin{figure}
+\begin{figure}[h!]
     \centering
     \includegraphics[width=\linewidth]{images/flexit/assets/clips.pdf}
     \caption{
@@ -249,7 +244,7 @@ We take advantage of  various pre-trained \ac{CLIP} models, and combine their em
 
 For the \ac{CLIP}-based multimodal encoders, we have considered all \ac{CLIP} networks freely available, listed in Table~\ref{tab:clip}.
  
-\begin{table}[H]
+\begin{table}[h!]
 \center
 \begin{tabular}{lcc}
 \toprule
@@ -494,14 +489,14 @@ transformations for images from the Stanford Cars
 dataset~\citep{KrauseStarkDengFei-Fei_3DRR2013} in Figure~\ref{fig:cars30k}.
 
 
-\begin{figure*}[H]
+\begin{figure*}[h!]
     \includegraphics[width=\textwidth]{images/flexit/assets/demo1.pdf}
     \captionof{figure}{\ours transformation examples. From top to bottom: input image, transformed image, and text query.
     }
     \label{fig:main_demo}
 \end{figure*}
 
-\begin{figure*}[H]
+\begin{figure*}[h!]
     \centering
     \includegraphics[width=\linewidth]{images/flexit/assets/main_exs.pdf}
     \caption{Transformation examples with \ours on ImageNet images. 
@@ -519,20 +514,19 @@ dataset~\citep{KrauseStarkDengFei-Fei_3DRR2013} in Figure~\ref{fig:cars30k}.
 \end{figure*}
 
 
-\begin{figure*}
+\begin{figure*}[h!]
     \centering
     \vspace{-1em}
     \includegraphics[width=\linewidth]{images/flexit/assets/cars2.pdf}
     \caption{Example  transformations on the \textit{Cars} dataset:  input images (first row),  \ours results  (second row), StyleCLIP results based on a  StyleGAN2 backbone pre-trained on LSUN Cars.
     dataset (last row). Although GAN-based images have better details like the wheels, they are farther away from the input images.}
-    
-    \label{fig:cars30k}
+\label{fig:cars30k}
 \end{figure*}
 
 Finally, Figure~\ref{fig:steps} shows intermediate transformation results with FlexIT for 0, 8, 16, 32 and 160 optimization steps. 
 The result after zero optimization steps shows the effect of autoencoding the input image, without changing the latent representation.
 
-\begin{figure*}[H]
+\begin{figure*}[h!]
     \center
     \includegraphics[width=\linewidth]{images/flexit/assets/steps.pdf}
     \caption{Intermediate transformation results obtained with FlexIT. Note that most edits only require 32 steps to be completed; some edits benefit from longer optimization schemes, such as the  spider and the banjo.
@@ -556,7 +550,7 @@ it returns natural images of the target class.
 It fails  on \ac{LPIPS}, however, since the output image is unrelated to the input. 
 
 
-\begin{table}
+\begin{table}[h!]
 \centering
 \small
 \resizebox{\columnwidth}{!}{
@@ -606,7 +600,7 @@ evaluation protocol used in their paper. This consists in using the COCO dataset
  We show 
  in Tab.\ \ref{results_manigan} that even with this COCO evaluation, FlexIT improves upon the scores of ManiGAN by a large margin.
 
-\begin{table}[H]
+\begin{table}[h!]
 \centering
 \begin{tabular}{l|l|l|l|l|}
 \cline{2-5}
@@ -620,15 +614,14 @@ evaluation protocol used in their paper. This consists in using the COCO dataset
 
 
 
-\begin{figure}[H] 
+\begin{figure}[h!]
     \centering
     \vspace{-1em}
     \includegraphics[width=\linewidth]{images/flexit/assets/classwise.pdf}
     \caption{Groupwise CSFID  and Failure Rate (1-Accuracy),  lower is better for both metrics. 
     Dark colors: best possible values obtained with  \textsc{Retrieve} baseline; medium colors: scores obtained with \ours; light colors: values obtained with  \textsc{Copy} baseline. 
     }
-    
-    \label{fig:classwise}
+\label{fig:classwise}
 \end{figure}
 
 To provide insight into which transformations work well, and which less so, we group 
@@ -645,14 +638,14 @@ Generally, transformations among  natural objects are more successful than
 \section{Ablation studies\label{ablations}}
 
 
-\begin{figure}
+\begin{figure}[h!]
     \centering
     \vspace{-1em}
     \includegraphics[width=\linewidth]{images/flexit/assets/reg_evol.pdf}
     \caption{\ac{CSFID} obtained without regularization, with individual \ac{LPIPS}, Latent and \ac{CLIP} regularizers, and using all. 
     Each curve corresponds to 160 steps of optimization on the dev.\ set. 
     }
-    \label{fig:regul}
+\label{fig:regul}
 \end{figure}
 
 \subsection{Regularizers}
@@ -671,29 +664,28 @@ reconstruct recognizable objects. %details like faces.
 Using all regularizers allows us to obtain the lowest \ac{CSFID} scores at low \ac{LPIPS}. 
 Corresponding qualitative examples are shown in Figure~\ref{fig:demo_reg}. 
 
-\begin{figure}
+\begin{figure}[h!]
     \centering
     \vspace{-1em}
     \includegraphics[width=\linewidth]{images/flexit/assets/demo_reg2.pdf}
     \caption{Example transformations with different regularizers. Textual queries from top to bottom: Rottweiler → German shepherd, Electric guitar → Banjo, Red wolf → Grey fox.
     }
-    \label{fig:demo_reg}
+\label{fig:demo_reg}
 \end{figure}
 
 
-\begin{figure}
+\begin{figure}[h!]
     \centering
     \vspace{-1em}
     \includegraphics[width=.9\linewidth]{images/flexit/assets/naug_nnets.pdf}
     \caption{CSFID for different CLIP networks combinations and number of data augmentations options. Default setting: ViT+2RN.}
-    \label{fig:augs}
-    \vspace{-1em}
+\label{fig:augs}
 \end{figure}
 
 
 In Table~\ref{table:ablations}, we detail the ablation experiments for all FlexIT parameters.
 
-\begin{table}
+\begin{table}[h!]
 \center
 \begin{tabular}{lrrrr}
 \toprule
@@ -735,7 +727,6 @@ In Table~\ref{table:ablations}, we detail the ablation experiments for all FlexI
                   resolution 320 & 54.3 &   \textbf{24.0} &   57.4 &  7.3 \\
                   \bottomrule
 \end{tabular}
-
 \caption{\label{table:ablations} FlexIT ablation results. $lr$ is the learning rate. Lines corresponding to our default configuration are marked in light grey. The norms $\ell_1$,  $\ell_2$, and $\ell_{2,1}$  refer to the distance used for regularization in the VQ-GAN latent space. Best values for each metric are shown in bold inside each group of parameter values.
 }
 \end{table}
@@ -768,7 +759,7 @@ In our other experiments we use the three smallest (and fastest) \ac{CLIP} netwo
 default setting.
 
 
-\begin{figure*}
+\begin{figure*}[h!]
     \centering
     \includegraphics[width=.9\linewidth]{images/flexit/assets/encoder_evol.pdf}
     \caption{\ac{CSFID} and \ac{LPIPS} scores across iterations, using different latent spaces, or raw pixels, for optimization. 
@@ -782,7 +773,7 @@ In Table~\ref{table:runtime}, we show ablations for combining multiple \ac{CLIP}
 multimodal encoder. This table also reports the runtime needed for each algorithm, which plays a role in our choices.
 
 
-\begin{table}
+\begin{table}[h!]
 \center
 \begin{tabular}{lrrrrrr}
 \toprule
@@ -867,33 +858,28 @@ The StyleGAN2 latent space ($\mathcal{W+}$) is bigger, allowing generated images
 be closer to the input images; however its \ac{CSFID} scores are not competitive with the 
 other approaches.
 
-\begin{figure*}[H]
+\begin{figure*}[h!]
     \centering
     \includegraphics[width=0.85\linewidth]{images/flexit/assets/encoder2.pdf}
-    \caption{
-    Transformation examples with various backbones for the image latent space. For each latent space, we show the initial image decoded from the initial point $z_0$, and the resulting image after 160 optimization steps. 
+    \caption{Transformation examples with various backbones for the image latent space. For each latent space, we show the initial image decoded from the initial point $z_0$, and the resulting image after 160 optimization steps. 
     The three latent spaces differ substantially in their encoding images (0 steps). The IC-GAN latent space provides natural images that are far away from the input image due to the limited generator capacity in conjunction with the smaller latent space size (2560 dim.). StyleGAN2 images preserve the input image appearance thanks to the larger size of its latent space $\mathcal{W+}$ (8192), however images contain many unnatural artifacts due to the challenges of embedding images in this latent space \cite{tov2021designing}. The VQ-GAN latent space leads to the best  reconstruction results.
     After 160 steps of optimization, the images generated with StyleGAN2 still have the same unnatural artifacts, and images generated with IC-GAN remain natural but  far from the input images.
      %but also contain many unnatural artifacts due to its limited capacity for such diverse generation. IC-GAN images are a bit more natural but much farther away from input images due to the smaller latent space size  
     VQGAN, which we use in FlexIT, achieves good edits while preserving the overall image appearance.
-    The pixel-space method introduces high-frequency artifacts, without substantially modifying the high-level semantic image content, resembling adversarial examples for image classification. 
-    }
-    \label{fig:encoders2}
+    The pixel-space method introduces high-frequency artifacts, without substantially modifying the high-level semantic image content, resembling adversarial examples for image classification. }
+\label{fig:encoders2}
 \end{figure*}
 
 
 \section{Hyperparameter study\label{hparam}}
 
-\begin{figure*}[H]
+\begin{figure*}[h!]
     \centering
     \includegraphics[width=\linewidth]{images/flexit/assets/hparam_fig.pdf}
     \includegraphics[width=\linewidth]{images/flexit/assets/hparam_acc.pdf}
-    \caption{
-    Effect  on \ac{CSFID} and Accuracy of hyper-parameters;  default settings  represented by 
-    the black dot, where all lines cross.
-    }
-    
-    \label{fig:hparam_csfid}
+    \caption{Effect  on \ac{CSFID} and Accuracy of hyper-parameters;  default settings  represented by 
+    the black dot, where all lines cross.}
+\label{fig:hparam_csfid}
 \end{figure*}
 
 
@@ -947,7 +933,7 @@ the bicycle.''). Importantly, progress in this direction will require to identif
 right data and evaluation metrics. 
 
 
-\begin{figure*}[H]
+\begin{figure*}[h!]
     \center
     \includegraphics[width=\linewidth]{images/flexit/assets/failures.pdf}
     \caption{
@@ -962,7 +948,7 @@ right data and evaluation metrics.
     %In column 7, we see an example of undesired compositional behavior: a red fox is not actually red.
     (g): an unrealistic image is produced by adding saturated red to the image.
     }
-    \label{fig:failures}
+\label{fig:failures}
 \end{figure*}
 
 \section{Conclusion}
@@ -980,8 +966,8 @@ right data and evaluation metrics.
 
  However, because our image generator (the decoder of VQ-GAN) is not a generative model, 
  realistic edits are not guaranteed. Later and concurrent works to this paper focus greatly 
- on Diffusion Models. In concurrent early works with editing with \ac{DDPM}s,~\cite{meng2022sdedit}, 
- for example, show that by modifying an image with strokes and then simply noising and denoising it,
+ on Diffusion Models. In  early works on editing with \ac{DDPM}s,~\citep{meng2022sdedit}, 
+ for example, show that by modifying an image with strokes and then simply noising and denoising it (with the \ac{DDPM}),
  we can leverage the generative capacities of the \ac{DDPM} and turn the stroke into a realistic edit. 
  This easy inversion scheme, combined with using an actual generative prior, makes Diffusion Models 
  a perfect candidate for our work, not prone to the weaknesses of neither Chapter~\ref{chapter:magec}

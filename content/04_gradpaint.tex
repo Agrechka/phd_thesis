@@ -168,9 +168,6 @@ to find adaptation algorithms for downstream tasks without fine-tuning, especial
     intermediate noise maps.
 
 
-\documentclass[main_for_review.tex]{subfiles}
-
-\begin{document}
 
 \section{GradPaint Method}
 
@@ -397,14 +394,6 @@ These baseline approaches require more steps to integrate the information from t
 
 
 
-\end{document}
-
-
-
-\documentclass[main_for_review.tex]{subfiles}
-
-
-\begin{document}
 
 \section{Experimental Results}
 %In this section, we describe our experimental setup to compare different algorithms on the inpainting task, and then expose qualitative and quantitative results.
@@ -903,19 +892,80 @@ Fig.~\ref{fig:vis_ablation} shows qualitative results on ImageNet-trained
 % \label{tab:quantitative_ablation}
 % \end{table}
 
-\subfile{Mask_OOD.tex}
-\subfile{Diversity.tex}
+\subsection{Impact of mask distribution} \label{ood_mask}
+
+Training-free is particularly advantageous since such a method is is agnostic to any pre-defined mask distribution to train on, contrary to training-based mehods. We illustrate this by comparing our method to LaMa \cite{lama} on masks outside of their pre-defined training distribution. Specifically, we create masks where each pixel has a 80\% chance of being masked, masking considerable portions of the image. As we can see with Fig.~\ref{fig:ood}, \cite{lama} produces blurry and low-quality results while our method produces realistic images. This is further quantitatively validated in Tab.~\ref{abnormal_tab}. 
+
+\begin{figure}[htbp]
+  \centering
+    \includegraphics[width=\linewidth]{images/gradpaint/abnormal_masks.pdf}
+    \caption{Uncurated results of our method compared to LaMa on out-of-distribution masks. We show images from (a) FFHQ and (b) Places2. LaMa fares poorly on masks outside of the training distribution. Best viewed zoomed and in color.}
+    \label{fig:ood}
+\end{figure}
 
 
-\end{document}
+
+
+
+\begin{table}[]
+\begin{tabular}{|l|ll|ll|}
+\hline
+                   & \multicolumn{2}{c|}{CelebaHQ} & \multicolumn{2}{c|}{Places2} \\ \hline
+                   & \multicolumn{1}{l|}{FID$\downarrow$}             & LPIPS$\downarrow$          & \multicolumn{1}{l|}{FID$\downarrow$}            & LPIPS$\downarrow$          \\ \hline
+\rowcolor[gray]{0.7}
+COPY (oracle)               & \multicolumn{1}{l|}{4.29}           & 0.0          & \multicolumn{1}{l|}{6.47}          & 0.0          \\ \hline
+
+GREYFILL               & \multicolumn{1}{l|}{403.23}           & 1.06          & \multicolumn{1}{l|}{282.01}          & 1.09          \\ \Xhline{4\arrayrulewidth}
+
+LaMa               & \multicolumn{1}{l|}{74.47}           & 0.517          & \multicolumn{1}{l|}{52.63}          & 0.320          \\ \hline
+
+GradPaint & \multicolumn{1}{l|}{\textbf{44.87}}  & \textbf{0.170} & \multicolumn{1}{l|}{\textbf{27.17}} & \textbf{0.277} \\ \hline
+
+\end{tabular}
+\caption{Quantitative results comparing our train-free method to a training-based method (LaMa) on CelebaHQ and Places2 using masks outside of LaMa's training distribution.}
+\label{abnormal_tab}
+\end{table}
+
+
+
+\subsection{Inpainting with diversity}
 
 
 
 
 
-%\documentclass[PaperForReview.tex]{subfiles}
 
-%\begin{document}
+\begin{figure}[htbp]
+  \centering
+    \includegraphics[width=\linewidth]{images/gradpaint/diversity.pdf}
+    \caption{Diversity of select samples from 30 random samples. Images which are well-harmonized are less diverse, e.g. in (1), our method is encouraged to produce a blue background using the small available context, disregarded by the baseline method which produces more diverse but unharmonized backgrounds. Matching columns of samples of (b) and (c) are initialized identically.}
+    \label{fig:diversity}
+\end{figure}
+
+A method which well-harmonizes an image for the inpainting task will, naturally, produce less diverse images. This can be illustrated in Fig.~\ref{fig:diversity}. Because the baseline method poorly utilizes the surrounding context, samples are diverse but not realistic. On the other hand, our method leverages the surrounding context which produces a more natural result, implying more consistent generations. 
+To further analyze the diversity of our samples, we used one single input image and generated 500 outputs, comparing our method with the baseline \emph{combine-image}. We then extracted image features using the inception v3 pre-trained model\cite{inceptionv3} and display the average of the variance of these features. Tab.~\ref{tab:diversitytab} shows the results. Our method gives diverse samples as the input mask sizes increases, but limits absurd and unharmonized results.
+
+% \begin{figure}[htbp]
+%   \centering
+%     \includegraphics[width=\linewidth]{images/diversitygraph2.png}
+%     \caption{Variance of image features for our method (GradPaint) compared to the baseline method, when generating 500 different results for the same input image (and 4 different masks). As we can see, our method expectedly produces more diverse images as the region covered by inpainting mask increases, yet the harmonized results are less diverse than the baseline method.}
+%     \label{fig:diversitygraph}
+% \end{figure}
+
+
+\begin{table}[]
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+\multicolumn{1}{|c|}{ mask coverage (\% of im.)} & \multicolumn{1}{c|}{10\%} & \multicolumn{1}{c|}{25\%} & \multicolumn{1}{c|}{50\%} & \multicolumn{1}{c|}{75\%} \\ \hline
+\textit{combine-image}                            & 2.3                       & 5.5                       & 10.5                      & 11.9                      \\ \hline
+GradPaint                                         & 1.9                       & 4.4                       & 8.7                       & 9.6                       \\ \hline
+\end{tabular}
+\caption{Variance of image features (in $10^{-3}$) for GradPaint compared to the baseline method, for 500 generated results using the same input image and increasing-sized masks.  Our method expectedly produces more diverse images as the inpainting mask increases, nearing the diversity of the baseline for large masks.}
+\label{tab:diversitytab}
+\vspace{-.45cm}
+\end{table}
+
+
 
 \section{Conclusion}
 
@@ -1223,14 +1273,14 @@ Fig.~\ref{fig:res_ffhq} shows additional select examples on FFHQ dataset. Notice
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{images/ThinMasks.pdf}
+    \includegraphics[width=\linewidth]{images/gradpaint/ThinMasks.pdf}
     \caption{Qualitative results with thin masks. Best viewed zoomed and in color. In \emph{(a)}, notice the quality of the text of the hat, which our method most successfully reconstructs. Notice the background face on the right in \emph{(b)}, which only our method managed to decently generate. Finally, in \emph{(c)}, \emph{(d)}, and \emph{(e)}, methods \emph{combine-noisy} and \emph{combine-image} have harmonization issues (see eyes, cheek/eyebrow, and lips respectively), while our method is on par with the costly RePaint.}
     \label{fig:qualitative_thin}
 \end{figure*}
 
 \begin{figure*}
     \centering
-    \includegraphics[width=\linewidth]{images/MediumMasks.pdf}
+    \includegraphics[width=\linewidth]{images/gradpaint/MediumMasks.pdf}
     \caption{Qualitative results with medium masks. Best viewed zoomed and in color. Methods \emph{combine-noisy} and \emph{combine-image} have harmonization issues, particularly in \emph{(a)} and \emph{(b)}. Notice the badge on the hat in \emph{(c)} where most methods fail to realistically integrate it with the hat. In \emph{(d)}, our method most successfully generates an eye which matches with the input eye. Finally, all methods struggle with the difficult example \emph{(e)}, as it is poorly represented in the training distriubtion.  Nevertheless, our method is the sole one which attempts to reconstruct the hand as a separate entity from the face.}
     \label{fig:qualitative_thick}
 \end{figure*}
@@ -1238,7 +1288,7 @@ Fig.~\ref{fig:res_ffhq} shows additional select examples on FFHQ dataset. Notice
 %will be displayed next page
 \begin{figure*}[htbp]
   \centering
-    \includegraphics[width=0.95\linewidth]{images/CVPR_ffhq.jpeg}
+    \includegraphics[width=0.95\linewidth]{images/gradpaint/CVPR_ffhq.jpeg}
     \caption{Inpainting results on select images from FFHQ. Best viewed zoomed and in color. Notice that while the overall reconstruction of LaMa is decent, zooming on the image unveils visible blurry and unrealistic artifacts typical of GANs. Results using the \emph{combine-image} baseline are of poor quality with an obvious ``copy/paste" effect at the mask. Notice that even with the 4500 forward passes necessary for RePaint, the overall image coherence often fails, despite the high-quality local generation.  Our method produces high-quality generation while matching with the global structure of the rest of the image. All models were trained on CelebAHQ dataset.}
     \label{fig:res_ffhq}
 \end{figure*}
@@ -1246,7 +1296,7 @@ Fig.~\ref{fig:res_ffhq} shows additional select examples on FFHQ dataset. Notice
 \section{Additional Qualitative experiments with Latent Diffusion Models}
 \begin{figure*}
     \centering
-    \includegraphics[width=0.625\linewidth]{images/in_latent_samples.pdf}
+    \includegraphics[width=0.625\linewidth]{images/gradpaint/in_latent_samples.pdf}
     \caption{Qualitative examples from ImageNet with the latent diffusion model. Both the baseline and our algorithm are initialized with the same initial noise map.}
     \label{fig:qualitative_latent_imagenet}
 \end{figure*}
@@ -1262,13 +1312,13 @@ Fig.~\ref{fig:qualitative_latent_imagenet} shows visual examples of our inpainti
     \centering
     \begin{subfigure}[t]{0.5\linewidth}
         \centering
-        \includegraphics[height=2.3in]{images/speed_fid.png}
+        \includegraphics[height=2.3in]{images/gradpaint/speed_fid.png}
         \caption{FID vs. Time tradeoff}
     \end{subfigure}%
     ~ 
     \begin{subfigure}[t]{0.5\linewidth}
         \centering
-        \includegraphics[height=2.3in]{images/speed_lpips.png}
+        \includegraphics[height=2.3in]{images/gradpaint/speed_lpips.png}
         \caption{LPIPS vs. Time tradeoff}
     \end{subfigure}
     \caption{Performance vs. Time tradeoff, performed on ImageNet. We performed various settings where we early stopped the gradient calculation of GradPaint at $13\%, 25\%, 38\%, 50\%, 63\%, 75\%$ of the denoising process. The most important gains of GradPaint occurs thanks to the early gradient-guidance, and after $63\%$, gradient guiding no longer helps performance. A reasonable early-stopping at $50\%$ of the denoising process reduces the initial time of GradPaint by $33\%$.}
@@ -1285,28 +1335,28 @@ We primarily previously showed select results on challenging tasks with masks in
 
 \begin{figure*}[htbp]
   \centering
-    \includegraphics[width=0.6\linewidth]{images/uncur1.jpeg}
+    \includegraphics[width=0.6\linewidth]{images/gradpaint/uncur1.jpeg}
     \caption{Uncurated results on ImageNet (1). Rows 1, 2, 4, 5, 6 display the superior ability of GradPaint to align fine details and global coherence.}
     \label{fig:uncur1}
 \end{figure*}
 
 \begin{figure*}[htbp]
   \centering
-    \includegraphics[width=0.6\linewidth]{images/uncur2.pdf}
+    \includegraphics[width=0.6\linewidth]{images/gradpaint/uncur2.pdf}
     \caption{Uncurated results on ImageNet (2). GradPaint works well on alignement tasks (row 12), but sometimes struggles with non-standard input (row 14). }
     \label{fig:uncur2}
 \end{figure*}
 
 \begin{figure*}[htbp]
   \centering
-    \includegraphics[width=0.6\linewidth]{images/uncur3.jpeg}
+    \includegraphics[width=0.6\linewidth]{images/gradpaint/uncur3.jpeg}
     \caption{Uncurated results on ImageNet (3). Our method works well on global coherence (row 29) and generating fine textures requiring alignment (row 31).}
     \label{fig:uncur3}
 \end{figure*}
 
 \begin{figure*}[htbp]
   \centering
-    \includegraphics[width=0.6\linewidth]{images/uncur4.pdf}
+    \includegraphics[width=0.6\linewidth]{images/gradpaint/uncur4.pdf}
     \caption{Uncurated results on ImageNet (4). Our method works well on global coherence (rows 36, 37) but sometimes fails on challenging tasks (row 35). From time to time, the background of the image may poorly influence the content to be generated (row 41).}
     \label{fig:uncur4}
 \end{figure*}
