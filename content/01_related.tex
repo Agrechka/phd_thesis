@@ -543,7 +543,7 @@ present their conditional variant and techniques used to improve synthesis quali
 we will go into more detail of some of the recent prominent models which have achieved photo-realistic 
 results.
 
-\subsection{Framework}
+\subsubsection{Framework}
 
 Introduced by \cite{sohl2015deep} and improved by \cite{ho2020denoising}, the \ac{DDPM} is a class 
 of generative models trained to remove various levels of noise added to an input training image, as illustrated in Fig.\ref{fig:gen_models}.
@@ -626,7 +626,7 @@ down to $~20$. Finally, \cite{rombach2022high} show that we can considerably red
 inference complexity by working with latents $\x_t$ in a compressed space rather than 
 the original image dimensions.
 
-\subsection{Conditional DDPMs}\label{subsection:conditional_ddpm}
+\subsubsection{Conditional DDPMs}\label{subsection:conditional_ddpm}
 
 Conditional diffusion models \citep{chen2021wavegrad, saharia2022image, saharia2022palette}
 make the denoising process conditional on a signal. Like other conditional generative models, 
@@ -668,7 +668,7 @@ of the class or text with:
 \cite{nichol2021glide} shows the superiority of this guidance compared to classifier-guidance,
 and classifier-free guidance is currently standard practice for conditional diffusion models.
 
-\subsection{Prominent Diffusion Models}
+\subsubsection{Prominent Diffusion Models}
 
 Initially, unconditional or class-conditional diffusion models were trained on small 
 datasets which allowed benchmarking against \ac{GAN}s \cite{ho2020denoising, dhariwal2021diffusion}.
@@ -853,7 +853,7 @@ dataset.
 The \ac{IS} was introduced by \cite{improved_techniques_gans} as a way to evaluate 
 \ac{GAN}s for diversity and fidelity. \ac{IS} relies on a pre-trained classifier 
 (typically a pre-trained InceptionV3 model \citep{szegedy2016rethinking}) which classifies the 
-generated samples $x$ to ImageNet classes $y$. \ac{IS} calculates the \ac{KL}-Divergence $(p(y|x) || p(y))$ between the 
+generated samples $x$ to ImageNet classes $y$. \ac{IS} calculates the \ac{KL}-Divergence $\mathrm{KL}(p(y|x) || p(y))$ between the 
 conditional distribution $p(y|x)$  and the marginal distribution $p(y)$.
 The intuition 
 is that the conditional distribution $p(y|x)$ should have low-entropy (high probabilities 
@@ -1082,7 +1082,7 @@ the lack of generative knowledge within the model can sometimes lead to absurd e
 we cannot control. For real-life 
 use-cases, this is not permissible. An editing task can be seen as a conditional inpainting 
 task, in which the condition only holds effect in the region defined by the inpainting mask. We thus 
-aborded the question of inpainting with \ac{DDPM}s. Because of their gradual inference nature, we can 
+aboarded the question of inpainting with \ac{DDPM}s. Because of their gradual inference nature, we can 
 guarantee zero image fidelity loss in the regions outside of the inpainting mask while continually 
 blending the generated output with the known regions through noising and denoising. However, the 
 denoising process is too fast for the blending to be successfully harmonized, inspiring works which 

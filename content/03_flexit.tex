@@ -1,9 +1,7 @@
 \chapter{Text-Guided Image Editing}
 \label{chapter:flexit}
 
-\newpage
 
-\minitoc
 \chapterwithfigures{\nameref*{chapter:flexit}}
 \chapterwithtables{\nameref*{chapter:flexit}}
 
@@ -20,7 +18,9 @@ the latent space of a \ac{GAN}, a task that is not trivial and will poorly respo
  images out of the \ac{GAN}'s distribution. Moreover, we saw that in general, \ac{GAN}s 
  are highly powerful in generating images of a restricted domain, they are much less 
  efficient in generating high-quality and diverse images of a more diverse domain. 
- However, we strive to perform image editing on any possible image. In this chapter, 
+ However, we strive to perform image editing on any possible image. 
+ 
+ In this chapter, 
  we thus investigate the use of a recently proposed autoencoder, VQ-GAN \citep{esser2021taming}, 
  to bypass this issue and encode any image into a latent "code" directly. 
  
@@ -44,6 +44,15 @@ We thoroughly evaluate our model on ImageNet, and  demonstrate quantitatively an
 qualitatively the superiority of our method against baselines, broadening the horizon 
 of text-driven image editing.
 
+
+In this chapter, after quickly reviewing some related work, we discuss our framework for 
+text-guided image editing by leveraging \ac{CLIP} 
+and VQ-GAN. Next, we will discuss our evaluation protocol and compare our method to existing baselines, 
+showing our superior performance. We further discus our implementation, hyperparameter choices and perform an 
+ablation study which show the rigour of our method. Finally, we discuss some limitations of our method and 
+conclude. Our work has led to the following publication:
+
+\fullcite{couairon2022flexit}
 
 \section{Related Work}
 
@@ -102,13 +111,7 @@ Their GAN-based approach relies on progressive growing as well as attention and 
 when fusing image and text embeddings, which are learned through jointly trained text and image encoders. 
 They train and evaluate on COCO \citep{caesar2018cocoostuff} and CUB datasets \citep{welinder2010cub200}.
 
-In this chapter, we will first discuss our framework for text-guided image editing by leveraging \ac{CLIP} 
-and VQ-GAN. Next, we will discuss our evaluation protocol and compare our method to existing baselines, 
-showing our superior performance. We further discus our implementation, hyperparameter choices and perform an 
-ablation study which show the rigour of our method. Finally, we discuss some limitations of our method and 
-conclude. Our work has led to the following publication:
 
-\fullcite{couairon2022flexit}
 
 
 \section{FlexIT framework for semantic editing}
@@ -422,7 +425,7 @@ In addition to the \ac{SFID}, we use a class-conditional
  have found it to be reliable and stable. We have noticed that the distance on standard deviations was not very discriminative: 
  since we are modifying images and not generating images from scratch, we already have
   a lot of diversity in the generated images. 
-  Experimentally, using $\alpha > 0$ of Equation~\ref{{eq:sfid}} mostly consisted in
+  Experimentally, using $\alpha > 0$ of Equation~\ref{eq:sfid} mostly consisted in
    adding a bias term in this metric, therefore we chose to use $\alpha =0 $ in the (C)SFID scores. 
 
 Since the images we transform are extracted from the ImageNet validation set, we use the ImageNet training set as our 
@@ -871,7 +874,7 @@ other approaches.
 \end{figure*}
 
 
-\section{Hyperparameter study\label{hparam}}
+\subsection{Hyperparameter study}\label{hparam}
 
 \begin{figure*}[h!]
     \centering

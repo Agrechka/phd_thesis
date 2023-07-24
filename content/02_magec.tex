@@ -1,9 +1,6 @@
 \chapter{Editing images with a pre-trained GAN}
 \label{chapter:magec}
 
-\newpage
-\minitoc
-
 %\newcommand{\mcL}{\mathcal{L}} \newcommand{\vx}{\mathbf{x}} \newcommand{\vh}{\mathbf{h}}
 %\newcommand{\vy}{\mathbf{y}}
 \newcommand{\tableindent}{\,\,\,\,}
@@ -29,7 +26,6 @@
 
 \ifthenelse{\boolean{skipMagec}}{\endinput}{}
 
-\todo{fix chapter:related bus}
 
 \section{Introduction}
 
@@ -67,11 +63,28 @@ images of poor quality, presenting artifacts and blur \citep{zhu2020indomain, St
  and i\textbf{MAG}e-lat\textbf{E}nt \textbf{C}onsistency (dubbed ``\magec'') into the global 
  loss function by using a simple yet effective procedure based on recent latent-manipulation methods.
  This allows us to explicitly incorporate 
- known editing methods into the GAN inversion optimization scheme to ensure better editability. \todo{matt's comment}
+ known editing methods into the GAN inversion optimization scheme to ensure better editability.
+
 We validate our method with extensive qualitative and quantitative evaluation. Notably, we 
 introduce a novel ``edit-consistency score'' which specifically evaluates the quality of a projection
 method in terms of editability. We show that our method outperforms existing baseline methods, and
  opens the door to new possibilities of editable high-quality image inversions.
+
+ In this chapter, we quickly go over some related work necessary for this chapter. Then, we 
+ introduce our new \ac{GAN} inversion \magec framework 
+which incorporates editability directly in the loss term. Then, we extensively evaluated 
+our method qualitatively and 
+quantitatively with standard evaluation metrics, comparing our \magec  inversion 
+to existing baselines. Finally, we introduce a new 
+evaluation metric, the \emph{edit consistency score} which is specifically adapted to 
+evaluate both the editability and fidelity of a \ac{GAN} projection.
+
+Our work has led to the following publication:
+\begin{itemize}
+  \item \fullcite{grechka_magec}
+\end{itemize}
+
+
 
 %  We introduce an i\textbf{MAG}e-lat\textbf{E}nt \textbf{C}onsistency (``\textbf{MAGEC}'') loss 
 % during the inversion process. This specifically incorporates editability into the inversion
@@ -257,19 +270,6 @@ Because fidelity to the input image is of utmost importance when performing
 high-quality image editing, we prioritize fidelity to the input image over time 
 and thus focus on an optimization-based approach.
 
-
-In this chapter, we first introduce our new \ac{GAN} inversion \magec framework 
-which incorporates editability directly in the loss term. Then, we extensively evaluated 
-our method qualitatively and 
-quantitatively with standard evaluation metrics, comparing our \magec  inversion 
-to existing baselines. Finally, we introduce a new 
-evaluation metric, the \emph{edit consistency score} which is specifically adapted to 
-evaluate both the editability and fidelity of a \ac{GAN} projection.
-
-Our work has led to the following publication:
-\begin{itemize}
-  \item \fullcite{grechka_magec}
-\end{itemize}
 
 
 
