@@ -58,7 +58,7 @@
 % - septembre 
 
 
-\todo{add note on GigaGAN (CVPR 2023) and StyleGANXL}
+\todo{add projected GAN}
 
 
 In this chapter, we will first give a quick overview of Neural Network Learning before 
@@ -543,7 +543,7 @@ present their conditional variant and techniques used to improve synthesis quali
 we will go into more detail of some of the recent prominent models which have achieved photo-realistic 
 results.
 
-\subsubsection{Framework}
+\subsubsection{Framework}\label{subsec:diffusionmodels_framework}
 
 Introduced by \cite{sohl2015deep} and improved by \cite{ho2020denoising}, the \ac{DDPM} is a class 
 of generative models trained to remove various levels of noise added to an input training image, as illustrated in Fig.\ref{fig:gen_models}.
@@ -1036,7 +1036,7 @@ Other popular choices for evaluation  include:
 \end{itemize}
 
 It is worth noting that the recent open-source large-scale diffusion model Stable-Diffusion was trained 
-on the public dataset \textbf{LAION-5B} \citep{schuhmann2022laion}. This dataset contains 
+on a filtered subset of the public dataset \textbf{LAION-5B} \citep{schuhmann2022laion}, which contains
 5 billion image-text pairs scraped off the web. Text-guided editing methods which use Stable-Diffusion, 
 in addition to evaluating on the above datasets, often evaluate on custom-made datasets \citep{bar2022text2live, mokady2023null} of more diverse nature which contain a variety of object categories and 
 text prompts for editing.
