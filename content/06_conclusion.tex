@@ -8,6 +8,9 @@
 \ifthenelse{\boolean{skipConclusion}}{\endinput}{}
 
 
+In this chapter, we approached semantic image-editing through different lenses. 
+In this short conclusion, we will breifly recapitulate our contributions and then 
+investigate latest works in the field as well as explore future prospects. 
 
 \todo{styleganxl}
 \todo{gigagan}
@@ -17,5 +20,19 @@
 \section{Contributions}
 
 
-\section{Future Work}
+\section{Exciting work}
+In the past year, generations from the latest large-scale text-to-image generative models have been flabbergasting 
+everyone from everyday content creaters to specialized \ac{DL} researchers. While only a few years ago, models were 
+trained on relatively little datasets, today's trends are to train larger models on larger datasets. 
+In the past, \ac{GAN}s became especially exciting since they allowed to generate images of unprecedented quality. 
+\ac{DDPM}s, while they were inferior to \ac{GAN}s for restricted datasets, quickly showed their superiority to 
+the latter with their straightforward likelihood-optimizing objective. Scaling up diffusion models was relatively 
+straightforward, and they were thus able to capture complicated world knowledge when trained on large-scale datasets 
+like the public LAION-5B~\ref{schuhmann2022laion} or internal large-scale datasets held by private companies.
 
+In the past year, 
+\ac{DDPM}s became particularly prominent, since their objective function optimizes the likelihood of the data
+and is not prone to instability. 
+
+
+\section{Future Work}
