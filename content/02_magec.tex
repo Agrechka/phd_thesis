@@ -289,9 +289,9 @@ discriminator $D$) and a real image $\x_{real} \in \mathbb{R}^{C\times H\times W
  For any real $\x_{real}$ image, the instance-based optimization problem for GAN inversion is as follows:
 
 \begin{enumerate}
-    \item Initialize $\z=\z_0$. This can be a random latent vector  \citep{abdal2019image2stylegan}, 
-    an "average" latent vector $\z_{avg}$ \citep{karra2019stylegan, abdal2019image2stylegan, abdal2020}, 
-    or the output of a pre-trained encoder on $\x_{real}$  \citep{zhu2020indomain, zhu2016generative}.  
+    \item Initialize $\z=\z_0$. This can be a random latent vector~\citep{abdal2019image2stylegan}, 
+    an "average" latent vector $\z_{avg}$~\citep{karra2019stylegan, abdal2019image2stylegan, abdal2020}, 
+    or the output of a pre-trained encoder on $\x_{real}$~\citep{zhu2020indomain, zhu2016generative}.  
     
     \item Minimize over $\z$ a loss $\mathcal{L}$  between the synthesized image $G(\z)$ and the 
     original one $\x_{real}$. The basic scheme works with a $\mathcal{L}=\mathcal{L}_2$ loss for the 
@@ -451,7 +451,10 @@ supervision, simultaneously in the image and latent spaces. We are able to
 \section{Experimental Setup}
 
 We propose to evaluate our \magec strategy on two benchmarks typically 
-used to evaluate \ac{GAN}s - Faces and Cars. 
+used to evaluate \ac{GAN}s - Faces and Cars. We describe the experimental setup which we used 
+for both of them below. We provide a detailed list of the assets 
+used in our work (datasets, code, and models) in
+the Appendix in~\ref{sec:MAGEC assets}.
 
 \subsection{Experimental Setup for Face edits}
 
@@ -504,6 +507,7 @@ which performs
 add/remove operations on all 40 attributes. 
 
 
+
 \minipar{Optimization Protocol} 
 We initialize $\z$ with $\z_{avg}$, by sampling 
 $N = 50000$ latent vectors with StyleGAN2 and taking the average vector $\z_0 = \z_{avg}$. 
@@ -552,7 +556,7 @@ space to $\mathcal{W+}$ by allowing each of the $512$-dimensional \emph{style ve
 
 
 \minipar{Training Configurations} 
-For our feature extractor $F$, we use a pre-trained publically available\footnote{https://github.com/sigopt/stanford-car-classification} cars 
+For our feature extractor $F$, we use a pre-trained publically available cars 
 classifier \citep{pretrained_cars} which classifies the image 
 into one of $196$ car models.
 
@@ -600,11 +604,12 @@ that GANSpace does not allow edits of the car model, so our
 
 
 \subsection{Baselines}
-We compare our method with Image2StyleGAN++ \citep{abdal2020}, the state-of-the-art
+We compare our method with Image2StyleGAN++~\citep{abdal2020}, the state-of-the-art
  optimization-based method for GAN-Inversion. This method uses the classic loss from
-  Eq.~\ref{classic_inversion_with_perceptual} (using the LPIPS \citep{zhanglpips2018} loss 
+  Eq.~\ref{classic_inversion_with_perceptual} (using the \ac{LPIPS} \citep{zhanglpips2018} loss 
   as the perceptual loss) and first optimizes the latent vector for 1000 iterations, then
-   the noise vector for 1000 iterations. This loss can be seen as an ablation of the \magec 
+   the noise vector for 1000 iterations. We implement their method since public code is not available. 
+   This loss can be seen as an ablation of the \magec 
    and ID losses from Eq.~\ref{final_loss_term}, but minimized over more iterations. We
     also perform an ablation study using our training protocol to optimize 
     Eq.~\ref{final_loss_term} but without the \magec loss. We initialize the starting 
@@ -626,7 +631,6 @@ We compare our method with Image2StyleGAN++ \citep{abdal2020}, the state-of-the-
 
 
 \begin{figure*}
-  \centering
   \begin{subfigure}[b]{0.45\textwidth}
       \centering
       \includegraphics[width=\textwidth]{images/magec/face_average.png}
@@ -780,10 +784,10 @@ method. The semantic editability of the inverted latent vector is of utmost impo
 when performing GAN Inversion, but there is no standard metric for measuring this. We 
 first evaluate using common metrics before introducing our novel ``editability score''.
 
-We aim to evaluate the realism and ``coherence'' of a given edit. The FID score 
+We aim to evaluate the realism and ``coherence'' of a given edit. The \ac{FID} score 
 \citep{fidscore} is not adapted to measure the quality of the edits, firstly because the 
 original sample size (1000 original images) is well-below the recommended 50,000 needed 
-for an accurate FID score, and secondly because our edits inherently lack diversity 
+for an accurate \ac{FID} score, and secondly because our edits inherently lack diversity 
 (edits of the same image resemble each other).
 Instead, we use the \emph{realism score} \citep{precision_recall}, which evaluates an 
 image instead of a distribution. This is a nearest-neighbor based method 
@@ -792,11 +796,12 @@ $1$ is a realistic image).
 
 To measure the ``coherence'' of an edit, we calculate a simple ``improved-target'' score
  $t$ to measure the net difference of the predicted attribute probability before and 
- after the attribute-targeted edit by using a pre-trained attribute classifier. A higher
+ after the attribute-targeted edit by using a pre-trained attribute classifier. We use 
+ our trained attribute classifier $F$ to predict this score. A higher
   value means that the attribute prediction increased after applying the editing method,
    meaning it reacted accordingly. Note that $t \in [0, 1]$. Remark that this metric is 
    only applicable to the editors which make attribute-specific edits (InterfaceGAN 
-   \citep{shen2020} and StyleFlow \citep{abdal2020styleflow}).
+   and StyleFlow).
 
 For reliable interpretation of these metrics, we performed a paired Student's t-test on 
 our method and a competing method, as the edit operations were the same for all projected

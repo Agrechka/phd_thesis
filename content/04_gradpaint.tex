@@ -1,69 +1,33 @@
-\chapter{GradPaint}
+\chapter{Gradient-guided inpainting with a DDPM}
 \label{chapter:gradpaint}
 
 \chapterwithfigures{\nameref*{chapter:gradpaint}} \chapterwithtables{\nameref*{chapter:gradpaint}}
 
 \ifthenelse{\boolean{skipGrad}}{\endinput}{}
 
-\todo{fix ref 5.16}
-
 \section{Introduction}
 
 In the previous chapters, we tried two approaches to perform image editing to real images. In 
 Chapter~\ref{chapter:magec}, we inverted a real image into a powerful pre-trained \ac{GAN} 
-and thereafter applied known editing methods.
+and thereafter applied known editing methods. However, although \ac{GAN} inversion can produce 
+high-quality edits for in-domain images, fidelity to the real-image is time consuming and not guaranteed. 
 In Chapter~\ref{chapter:flexit}, we  autoencoded a real image into a compact latent space and edited the resulting latent through 
-the use of a pretrained \ac{CLIP} model and well-picked regularization terms. Both methods, however, 
-have their drawbacks when it comes to editing real images. 
-% \begin{enumerate}
-%   \item Fidelity to the input image
-%   \item High quality output image 
-%   \item Fidelity to the edit operation
-% \end{enumerate}
-
-Although \ac{GAN} inversion can produce high-quality edits for in-domain images, fidelity to the real image is time-consuming
- and is not guaranteed. 
-Moreover, for out-of-domain images, editing and inversion fails. Our second approach relies on regularization terms for editing capability 
-(and not a generative prior) and thus does not necessarily guarantee well-edited images. Moreover, the auto-encoder by nature 
-compromises   fidelity to the real image. 
+the use of a pretrained \ac{CLIP} model and well-picked regularization terms. Although inversion in this case
+is instantaneous, the editing relies on regularization terms rather than a generative prior, which may create poor edits.
 
 In this chapter, we leverage another family of generative models, \ac{DDPM}, which can easily "invert" a real image 
-into a \ac{DDPM} by simply noising it. As we will see, we can also force fidelity to the input image in parts we do not wish to edit 
-all while the \ac{DDPM} instrinsically harmonizes the two separate components with its incremental denoising mechanism. 
-
-% \cite{meng2022sdedit} show that by drawing strokes on an input image and then noising and denoising with the \ac{DDPM}, we can 
-% obtain realistic images incorporating the stroke into the domain of the pre-trained \ac{DDPM}. However, fidelity to the 
-% input image is not guaranteed, since the parts of the input image which have been noised are irrecoverable. 
-
-Here, we aimed at acheiving a very general image-editing task: inpainting.
+into a \ac{DDPM} by simply noising it. Concretely, we aim to leverage a powerful \ac{DDPM} for the general 
+task of inpainting. 
 Inpainting consists in generating a missing part of a given image, given a binary mask 
 indicating where the generation should take place. It is a fundamental task in computer
  vision, having obvious implications for image editing, image restoration, object 
- removal, and so on. 
- Indeed, we argue that if we have a robust unconditional 
-inpainting method, then extension to a more controlled generation (like stroke-guided editing~\citep{meng2022sdedit} or text-guided editing~\citep{nichol2021glide})
-is straightforward. 
+ removal, and so on. We argue that if we have a robust unconditional 
+inpainting method, then the extension to a more controlled generation (like stroke-guided editing~\citep{meng2022sdedit} or 
+text-guided editing~\citep{nichol2021glide}) is also improved. The straightforward extension to real images, the strong generative power, 
+and the iterative manipulation of spatial noise maps (which makes it easy to manipulate them with binary masks)  
+of modern \ac{DDPM}s are our motivation to use pre-trained 
+\ac{DDPM}s for this task. 
 
-Currently, state-of-the-art methods are generally based on 
- Generative Adversarial Networks (GANs)~\citep{lama, zhao2021comodgan}, and consist 
- in explicitly training a model to reconstruct an image using self-generated masks.
-  Although these methods often achieve reasonable results with standard metrics, 
-  visual results tend to have obvious, unrealistic artifacts. Moreover, training 
-  these models is accompanied with the difficulties of training instability inherent 
-  with GANs as well as limitations on the diversity of the dataset distribution. 
-
- \ac{DDPM}s have recently gained massive attention,
-  achieving high-resolution, photo-realistic and diverse image generation 
-~\citep{ramesh2022hierarchical, saharia2022photorealistic, rombach2022high, latentdiffusion2, nichol2021glide, dhariwal2021diffusion}. In 
-  terms of image generation, these models are on par or better than \ac{GAN}s even for 
-  constrained datasets like faces~\citep{rombach2022high}; and largely surpass them for 
-  diverse datasets like ImageNet~\citep{nichol2021glide, rombach2022high}. Furthermore, 
-  recent models trained on large-scale datasets 
-~\citep{saharia2022photorealistic, ramesh2022hierarchical, nichol2021glide, gafni2022make, rombach2022high} have given rise to 
-  high-quality and flexible text-conditioned image generation, allowing users to 
-  generate astonishingly imaginative or artistic high-resolution images~\citep{artcomp}. 
-  It is thus highly enticing to be able to use these pretrained models directly for
-   downstream tasks, rather than re-training a new model from scratch. 
 
    There has been limited work in using pre-trained diffusion models for this task, and 
 the typical approach~\citep{lugmayr2022repaint, meng2022sdedit, nichol2021glide} is to guide the generative 
@@ -78,19 +42,22 @@ However, this strategy often produces unsatisfying results, which we believe is 
    when the initial random latent map is too mismatched with the input image.
 
 
-In this chapter, we will quickly discuss the related work to contextualize our work. 
+In this chapter, we quickly discuss the related work to contextualize our approach. 
 Then, we introduce our strategy for guiding  pre-trained diffusion models
-   to better perform inpainting tasks. Our method, dubbed GradPaint, optimizes the
-    diffusion process by better harmonizing generated content inside the inpainting mask.
-     This guides the generation at every single step of the denoising process towards a
-      more harmonized final image. We then show extensive evaluation on various datasets, 
-    including  CelebA-HQ\citep{karras2018progressive}, FFHQ\citep{karra2019stylegan}, ImageNet\citep{deng2009imagenet},
-     Places2\citep{zhou2017places}, and COCO\citep{lin2014mscocodataset}. We discuss image diversity 
-     and generalization. Finally, we discuss some limitations and conclude. 
+to better perform inpainting tasks. Our method, dubbed GradPaint, optimizes the
+diffusion process by better harmonizing generated content inside the inpainting mask.
+Specifically, we define a "harmonization" loss which depends on the prediction of the \ac{DDPM}
+itself. Similar to classifier-guidance (see~\ref{subsection:classifier_guidance}), 
+we use the gradient of this to  guide the generation at every single step of the denoising process towards a
+more harmonized final image. We show extensive evaluation on various datasets, 
+including  CelebA-HQ\citep{karras2018progressive}, FFHQ\citep{karra2019stylegan}, ImageNet\citep{deng2009imagenet},
+Places2\citep{zhou2017places}, and COCO\citep{lin2014mscocodataset}. We discuss image diversity 
+and generalization. Finally, we discuss some limitations and conclude. 
 
+Our work is currently in submission:
 
+\fullcite{grechka_gradpaint}
 
-\todo{Our work is a ... arxiv submission}
 
 % Inpainting consists in generating a missing part of a given image, given a binary mask 
 % indicating where the generation should take place. It is a fundamental task in computer
@@ -169,16 +136,12 @@ Then, we introduce our strategy for guiding  pre-trained diffusion models
 
 \section{Related Work}
 
+\minipar{Inpainting}
 
-
-% Historically, the inpainting task aimed at replacing corrupted parts in images with more plausible image parts, so the evaluation criterion was naturally a distance metric with respect to the uncorrupted or unmasked image. More recently, generative models have became able to synthetize convincing images for datasets with diverse images, allowing to fill in larger regions when editing images. With larger inpainting masks, generative models have more freedom to inpaint details that are different from the ground truth value, as long as the resulting output looks realistic. Therefore, \textit{image realism}, as measured by the FID score \cite{heusel2017gans} for instance is the most important metric to compare 
-
-%\matt{general comment sur inpainting  different methods. et discuter le fait que historiquement le critere d'éval c'est retrouver au mieux l'image originale alors que dans le contexte recent generatif avec des masquages tres important le critere le plus important pourrait être la plausibilité }
-
-
-\subsection{Inpainting}
-
-Historically, inpainting was aimed at recovering small corruption errors in images and 
+In~\ref{section:image_editing}, we discussed different editing methods. Particularly, inpainting can be 
+seen as a particular case of image-to-image translation  in which the input image is a masked image with 
+missing parts and the goal is to "fill in" the missing parts while leaving the rest of the image 
+untouched. Historically, inpainting was aimed at recovering small corruption errors in images and 
 was addressed with matching or ``borrowing" local color and texture around the masked
  region~\citep{poisson, patch_based}. Evaluation consisted in calculating a distance
   metric with respect to the unmasked image. More recently, generative models have 
@@ -214,38 +177,30 @@ utilize powerful pre-trained decoders like StyleGAN2~\citep{karra2020stylegan2} 
 
 
 
-\begin{figure*}[h]
-  \centering
-    \includegraphics[width=\textwidth]{images/gradpaint/method.pdf}
-    \caption{GradPaint method overview. We propose to modify one step of the DDPM denoising process with a gradient descent update on $x_t$ to better match the masked input image, in turn producing a better matched noise map $x_{t-1}$ for the next step. This improvement in the DDPM noise prediction thus allows for better fitting intermediate noise map predictions $x_t$ earlier in the DDPM denoising process, which ultimately produces a successful final inpainted image $x_0$.}
-    \label{fig:method}
-\end{figure*}
-
 %\matt{etoffer dire que c'est une etape des DDPM sampling modifié, qui compose avec la pred et le mask pour calculer un gradient dedie et le recombiner apres une interpolation pour calculer le next bruit ... Biensur la prediction direct n'est pas très bonne, recombinée avec l'image maskée cest mieux mais surtout ca permet de calculer des gradient sur tout xt utiles pour la prochaine reconstruction...}
 
-\subsection{Diffusion models for downstream tasks}
+\minipar{Diffusion models for downstream tasks}
 
-Diffusion models are becoming state-of the art methods for generation tasks on many 
-modalities, like images, videos, speech and text. Their excellent scaling behavior makes 
-them a model of choice for training on large and diverse data, compared to GANs which 
-still suffer from mode collapse and training instabilities. They can also be conditioned
+As discussed in~\ref{sec:diffusion:models}, \ac{DDPM}s have become state of the art in 
+image generation, including large-scale text-to-image generation as well as unconditional generation 
+where \ac{GAN}s have typically excelled. They can also be conditioned
  on various input data: for the specific task of inpainting, the input image and mask 
  can be given as additional input to train a conditional diffusion model specialized on
   the inpainting task, as done in~\cite{saharia2022palette}.
 
 However, due to the computational cost of training generative models, it is appealing 
 to find adaptation algorithms for downstream tasks without fine-tuning, especially for
- the task of inpainting which bears a lot of similarities with the unconditional 
- generation task.~\cite{rombach2022high, nichol2021glide, song2021scorebased} propose to adapt
-  pre-trained diffusion models to inpainting by injecting a guiding mechanism in the 
-  generative process, a strategy which we build upon in this paper.~\cite{lugmayr2022repaint} also
-   proposes to take advantage of pre-trained diffusion models with cycles of denoising 
-   and renoising operations, which we found computationally very expensive. Finally, 
-   in a parallel line of work most similar to ours,~\cite{mcg} similarly propose to
-    guide the generation using the gradient of a ``manifold constraint", but they do 
-    not use a custom loss nor do they apply optimization to the entirety of the 
-    intermediate noise maps.
-
+the task of inpainting which bears a lot of similarities with the unconditional 
+generation task.~\cite{rombach2022high, nichol2021glide, song2021scorebased} propose to adapt
+pre-trained diffusion models to inpainting by injecting a guiding mechanism in the 
+generative process, a strategy which we build upon in this paper.~\cite{lugmayr2022repaint} also
+proposes to take advantage of pre-trained diffusion models with cycles of denoising 
+and renoising operations, which we found computationally very expensive. Finally, 
+in a parallel line of work most similar to ours,~\cite{mcg} similarly propose to
+guide the generation using the gradient of a ``manifold constraint", which they apply to 
+various downstream tasks like inpainting, colorization, and sparse view CT reconstruction. 
+While our method has similarities to~\cite{mcg}, we propose a guiding mechanism tailored to 
+inpainting, outperforming their results.
 
 
 \section{GradPaint Method}
@@ -286,8 +241,8 @@ In this subsection, we will build off the presented framework to describe the pa
 As presented in~\ref{subsec:diffusionmodels_framework}, the \emph{DDPM sampling equations} are as follows:
 
 \begin{align*}
-  \hat{\x}_0 &= \frac{1}{\sqrt{\alpha_t}}(\x_t - \sqrt{1 - \alpha_t} \cdot \epsilon_\theta(\x_t, t)) \\
-  \x_{t-1} &= \frac{(\alpha_{t-1}-\alpha_t) \sqrt{\alpha_{t-1}}}{\alpha_{t-1}(1 - \alpha_t)} \hat{\x}_0 + \frac{(1-\alpha_{t-1})\sqrt{\alpha_t}}{(1 - \alpha_t)\sqrt{\alpha_{t-1}}} \x_t + \sigma_t \z
+  \hat{\x}_0 &= \frac{1}{\sqrt{\alpha_t}}(\x_t - \sqrt{1 - \alpha_t} \cdot \epsilon_\theta(\x_t, t)), \numberthis \label{eq:ddpm0}\\
+  \x_{t-1} &= \frac{(\alpha_{t-1}-\alpha_t) \sqrt{\alpha_{t-1}}}{\alpha_{t-1}(1 - \alpha_t)} \hat{\x}_0 + \frac{(1-\alpha_{t-1})\sqrt{\alpha_t}}{(1 - \alpha_t)\sqrt{\alpha_{t-1}}} \x_t + \sigma_t \z, \numberthis \label{eq:ddpm1}
 \end{align*}
 
 
@@ -299,7 +254,7 @@ For instance,~\cite{nichol2021glide} applies a maskwise correction on $\hat{\x}_
 \hat{\x}_0' = M \odot \hat{\x}_0 + (1 - M) \odot I,
 \end{equation}
 where $I$ is the input image and $M$ is a binary image mask equal to 1 in the image regions that must be inpainted, 0 otherwise. 
-The update rule for $\x_{t-1}$ is then adapted to use $\hat{\x}_0'$ instead of $\hat{\x}_0$ in \autoref{eq:ddpm1}. This correction 
+The update rule for $\x_{t-1}$ is then adapted to use $\hat{\x}_0'$ instead of $\hat{\x}_0$ in~\autoref{eq:ddpm1}. This correction 
 progressively biases the diffusion model to exactly match $I$ outside the inpainting mask $M$. In the remaining of the paper, 
 we refer to this method as \textit{combine-image} since it combines the images $\hat{\x}_0$ and $I$ before interpolating with $\x_t$.
 
@@ -314,6 +269,13 @@ ground truth (noised) pixel values outside the mask.
 
 
 \subsection{GradPaint framework}
+
+\begin{figure*}[h]
+  \centering
+    \includegraphics[width=\textwidth]{images/gradpaint/method.pdf}
+    \caption{GradPaint method overview. We propose to modify one step of the DDPM denoising process with a gradient descent update on $x_t$ to better match the masked input image, in turn producing a better matched noise map $x_{t-1}$ for the next step. This improvement in the DDPM noise prediction thus allows for better fitting intermediate noise map predictions $x_t$ earlier in the DDPM denoising process, which ultimately produces a successful final inpainted image $x_0$.}
+    \label{fig:method}
+\end{figure*}
 
 
 Our strategy is built upon the \textit{combine-image} zero-shot inpainting method presented in \S\ref{background}.
@@ -465,7 +427,7 @@ updated to produce a better estimation $\hat{\x}_0$
 \subsection{Visualizations}
 
 \noindent \textbf{Harmonization.} The effect of the GradPaint update is illustrated in Fig.~\ref{fig:intuition}, 
-which shows the intermediate DDPM predictions for $\hat{\x}_0$ and $\hat{\x}_0'$ at various timesteps. We 
+which shows the intermediate \ac{DDPM} predictions for $\hat{\x}_0$ and $\hat{\x}_0'$ at various timesteps. We 
 compare GradPaint with the \textit{combine-noisy} and \textit{combine-image} methods presented in \S\ref{background}, where all three methods share the same DDPM model, parameters and initial noise maps.
 These baseline approaches require more steps to integrate the information from the input image, at which point it is often ``too late" to construct a harmonized image - misalignment between the generation and the input image can no longer be corrected. In contrast, for GradPaint, the optimization step on $\x_t$ quickly pushes the merged image $\hat{\x}_0'$ to harmonizes well with the masked input image $\x_0$, producing an inpainting result without alignment artifacts.
 
@@ -475,7 +437,7 @@ These baseline approaches require more steps to integrate the information from t
 \begin{figure}[htbp]
   \centering
     \includegraphics[width=\linewidth]{images/gradpaint/intuition.pdf}
-    \caption{DDPM predictions at different stages (indicated in $\%$) of the denoising process. We compare two baselines (a) and (b) with GradPaint (the two last rows). GradPaint better harmonizes regions inside and outside the inpainting mask right from the beginning of the denoising process.}
+    \caption{\ac{DDPM} predictions at different stages (indicated in $\%$) of the denoising process. We compare two baselines (a) and (b) with GradPaint (the two last rows). GradPaint better harmonizes regions inside and outside the inpainting mask right from the beginning of the denoising process.}
     \label{fig:intuition}
 \end{figure}
 
@@ -513,9 +475,9 @@ These baseline approaches require more steps to integrate the information from t
 \end{figure}
 
 \begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\linewidth]{images/gradpaint/losses1.pdf}
-  \caption{Intermediate DDPM predictions with GradPaint using separate components of our loss. 
+  \hspace{-1.5cm}
+  \includegraphics[width=1.2\linewidth]{images/gradpaint/losses1.pdf}
+  \caption{Intermediate \ac{DDPM} predictions with GradPaint using separate components of our loss. 
   The alignment loss encourages smooth and coherent transitions, as can be seen with the homologous background.}
 \label{fig:loss_intuition-int}
 \end{figure}
@@ -535,12 +497,14 @@ These baseline approaches require more steps to integrate the information from t
 \section{Evaluation Protocol}
 
 
-
 \subsection{Pre-trained models and implementation details} 
+We detail our setup for image-space diffusion models as well as latent-space diffusion models.
+We provide a detailed list of the assets 
+used in our work (datasets, code, and models) in
+the Appendix in~\ref{sec:GradPaint assets}.
 
 \minipar{Experiments on image-space diffusion models}
-We primarily use diffusion models from guided diffusion~\citep{dhariwal2021diffusion} 
-\footnote{available at \url{https://github.com/openai/guided-diffusion/}}, which operates on images of size $256\times256$. 
+We primarily use diffusion models from guided diffusion~\citep{dhariwal2021diffusion}, which operates on images of size $256\times256$. 
 We use their pre-trained unconditional models (pre-trained on FFHQ, CelebaHQ, and Places2)  as well as their class-conditional model
 trained on ImageNet. 
 
@@ -608,8 +572,9 @@ Without
 
 \section{Quantitative results}
 
-\hspace{-2cm}
+
 \begin{table*}[t]
+  \hspace{-1cm}
   \scriptsize
   \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|}
   \hline
@@ -790,6 +755,8 @@ Without
     \label{tab:quantitative_ablation}
   \end{table}
 
+  \vspace{1cm}
+
     
 
 % \begin{table}
@@ -829,12 +796,10 @@ obtains slightly better LPIPS scores but requires an inpainting-specific trainin
 model). For \emph{thin} and \emph{medium} masks, our method also  generally achieves the best FID score 
 and a comparable LPIPS score even with LaMa's fully supervised method. Moreover, LaMa, unlike all other methods, 
 has access at train time to the mask distribution that we use for testing.  
-The limits of  
-will be discussed in~\ref{ood_mask}.
 
 
 
-We validate different components of our method with the ImageNet\citep{deng2009imagenet} dataset and  guided diffusion model, summarized in 
+We validate different components of our method with the ImageNet~\citep{deng2009imagenet} dataset and  guided diffusion model, summarized in 
 Tab.~\ref{tab:quantitative_ablation}. This more difficult dataset was chosen to better analyze our different components as well as 
 validate our method on class-conditioned diffusion models, where generation could be biased by the class. Our full method, and the 
 alignment loss in particular, improves reconstruction and realism of generated images.
@@ -934,7 +899,7 @@ GREYFILL &
 
 \subsection{Image-space Diffusion Models}
 
-Figs.~\ref{fig:res2} and~\ref{fig:places} and  show qualitative results using our method for ImageNet and Places2 pre-trained models, 
+Figs.~\ref{fig:places} and~\ref{fig:res2} and  show qualitative results using our method for Places2 and ImageNet pre-trained models, 
 respectfully. Note that without the gradient-guidance of GradPaint, generations are unable to harmonize well.
 Images produced by RePaint~\citep{lugmayr2022repaint} often lack global coherence, like the missing spider web in Fig.~\ref{fig:res2}. 
 Our method produces globally and locally harmonized images, without the heavy computation cost of~\cite{lugmayr2022repaint} nor the 
@@ -947,105 +912,133 @@ Fig.~\ref{fig:vis_ablation} shows qualitative results on ImageNet-trained
   Adding gradient update as well as the alignment loss produces generations harmonized with the surrounding context. 
 
 
-\begin{figure}[H]
-  \centering
-    \includegraphics[width=0.8\linewidth]{images/gradpaint/imagenet_results.pdf}
-    \caption{Inpainting results on select images from ImageNet. The \emph{combine-image} baseline produces unharmonized results and struggles to take the context into account. Our method produces high-quality results at a fraction of the time of RePaint~\citep{lugmayr2022repaint}. }
-    \label{fig:res2}
-\end{figure}
 
-\begin{figure}[H]
-  \centering
-    \includegraphics[width=\linewidth]{images/gradpaint/places2.pdf}
-    \caption{In-the-wild images for models trained on Places2. Note that \emph{combine-image}, \emph{combine-noisy} and GradPaint all use the same noise map for initialization. Note that LaMa was specifically trained using similar masks, contrary to our method.}
-    \label{fig:places}
-\end{figure}
 
-\begin{figure}[H]
-  \centering
+
+
+
+
+    \begin{figure}[H]
+      \hspace{-2cm} \includegraphics[width=1.2\linewidth]{images/gradpaint/places2.pdf} % tried 1.4
+      \caption{In-the-wild images for models trained on Places2. Note that \emph{combine-image}, \emph{combine-noisy} and GradPaint all use the same noise map for initialization. Note that LaMa was specifically trained using similar masks, contrary to our method.}
+      \label{fig:places}
+    \end{figure}
+  
+  \begin{figure}[H]
+    \centering
+      \includegraphics[width=0.8\linewidth]{images/gradpaint/imagenet_results.pdf} %tried 1, too big
+      \caption{Inpainting results on select images from ImageNet. The \emph{combine-image} baseline produces unharmonized results and struggles to take the context into account. Our method produces high-quality results at a fraction of the time of RePaint~\citep{lugmayr2022repaint}. }
+      \label{fig:res2}
+  \end{figure}
+  
+  
+  \begin{figure}[H]
+    \centering
     \includegraphics[width=0.75\linewidth]{images/gradpaint/vis_ablation.pdf}
     \caption{Qualitative results for select images of ImageNet dataset. Baseline \emph{combine-image} produces  images with visible artifacts. Our gradient update using only the masked MSE loss improves the ``copy-paste" effect, while the alignment loss produces better aligned transitions.}
     \label{fig:vis_ablation}
-\end{figure}
+  \end{figure}
 
 
 
 Figs.~\ref{fig:qualitative_thin} and ~\ref{fig:qualitative_thick} show additional qualitative examples using
- \emph{thin} and \emph{medium} masks. With these smaller masks, the visual differences are sometimes harder to 
- appreciate, and we recommend zooming when viewing results. We compare our method to the baselines 
- \emph{combine-image}, \emph{combine-noisy}, LaMa, and RePaint. Baselines \emph{combine-noisy} and
-  \emph{combine-image} clearly have harmonization issues. LaMa tends to have blurry artifacts typical of
-   GANs in the generated areas. RePaint generally produces realistic generations, but which aren't always
-    coherent with other elements of the image. Our method produces high-quality results at a much smaller
-     computational cost than RePaint.
+\emph{thin} and \emph{medium} masks. With these smaller masks, the visual differences are sometimes harder to 
+appreciate, and we recommend zooming when viewing results. We compare our method to the baselines 
+\emph{combine-image}, \emph{combine-noisy}, LaMa, and RePaint. Baselines \emph{combine-noisy} and
+ \emph{combine-image} clearly have harmonization issues. LaMa tends to have blurry artifacts typical of
+  GANs in the generated areas. RePaint generally produces realistic generations, but which aren't always
+   coherent with other elements of the image. Our method produces high-quality results at a much smaller
+    computational cost than RePaint.
 
 
-Fig.~\ref{fig:res_ffhq} shows additional select examples on FFHQ dataset. Notice that LaMa produces results
- close to the reference image, but generally containing blurry artifacts, explaining the generally higher
-  LPIPS scores but lower FID scores than our method. RePaint's method, despite requiring over 5 minutes of 
-  compute time for a generation, produces smooth local changes but often fails to harmonize with the global
-   structure of the image (rows 1, 2, 4, 5). Our method produces high-quality and harmonized results, especially
-    visible when the generation requires surrounding context, such as rows 1 and 5 which necessitate generating glasses.
+       
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{images/gradpaint/ThinMasks.pdf}
-    \caption{Qualitative results with thin masks. Best viewed zoomed and in color. In \emph{(a)}, notice the quality of the text of the hat, which our method most successfully reconstructs. Notice the background face on the right in \emph{(b)}, which only our method managed to decently generate. Finally, in \emph{(c)}, \emph{(d)}, and \emph{(e)}, methods \emph{combine-noisy} and \emph{combine-image} have harmonization issues (see eyes, cheek/eyebrow, and lips respectively), while our method is on par with the costly RePaint.}
-\label{fig:qualitative_thin}
-\end{figure}
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\linewidth]{images/gradpaint/ThinMasks.pdf} %tried with 1
+        \caption{Qualitative results with thin masks. Best viewed zoomed and in color. 
+        In \emph{(a)}, notice the quality of the text of the hat and the background face on the right in \emph{(b)}. 
+        Finally, in \emph{(c)}, \emph{(d)}, and \emph{(e)}, methods \emph{combine-noisy} and \emph{combine-image} 
+        have harmonization issues (see eyes, cheek/eyebrow, and lips respectively), while our method is on par with the costly RePaint.}
+    \label{fig:qualitative_thin}
+    \end{figure}
+    
+    \begin{figure}[H]
+      \centering
+      \includegraphics[width=\linewidth]{images/gradpaint/MediumMasks.pdf}
+        \caption{Qualitative results with medium masks. Best viewed zoomed and in color. Methods \emph{combine-noisy} and \emph{combine-image} have harmonization issues, particularly in \emph{(a)} and \emph{(b)}. Notice the badge on the hat in \emph{(c)} where most methods fail to realistically integrate it with the hat. In \emph{(d)}, our method most successfully generates an eye which matches with the input eye. Finally, all methods struggle with the difficult example \emph{(e)}, as it is poorly represented in the training distriubtion.  Nevertheless, our method is the sole one which attempts to reconstruct the hand as a separate entity from the face.}
+    \label{fig:qualitative_thick}
+    \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\linewidth]{images/gradpaint/MediumMasks.pdf}
-    \caption{Qualitative results with medium masks. Best viewed zoomed and in color. Methods \emph{combine-noisy} and \emph{combine-image} have harmonization issues, particularly in \emph{(a)} and \emph{(b)}. Notice the badge on the hat in \emph{(c)} where most methods fail to realistically integrate it with the hat. In \emph{(d)}, our method most successfully generates an eye which matches with the input eye. Finally, all methods struggle with the difficult example \emph{(e)}, as it is poorly represented in the training distriubtion.  Nevertheless, our method is the sole one which attempts to reconstruct the hand as a separate entity from the face.}
-\label{fig:qualitative_thick}
-\end{figure}
 
-%will be displayed next page
+
+    Fig.~\ref{fig:res_ffhq} shows additional select examples on FFHQ dataset. Notice that LaMa produces results
+    close to the reference image, but generally containing blurry artifacts, explaining the generally higher
+     LPIPS scores but lower FID scores than our method. RePaint's method, despite requiring over 5 minutes of 
+     compute time for a generation, produces smooth local changes but often fails to harmonize with the global
+      structure of the image (rows 1, 2, 4, 5). Our method produces high-quality and harmonized results, especially
+       visible when the generation requires surrounding context, such as rows 1 and 5 which necessitate generating glasses.
+ 
+
+    %will be displayed next page
 \begin{figure}[H]
   \centering
-    \includegraphics[width=0.95\linewidth]{images/gradpaint/CVPR_ffhq.jpeg}
-    \caption{Inpainting results on select images from FFHQ. Best viewed zoomed and in color. Notice that while the overall reconstruction of LaMa is decent, zooming on the image unveils visible blurry and unrealistic artifacts typical of GANs. Results using the \emph{combine-image} baseline are of poor quality with an obvious ``copy/paste" effect at the mask. Notice that even with the 4500 forward passes necessary for RePaint, the overall image coherence often fails, despite the high-quality local generation.  Our method produces high-quality generation while matching with the global structure of the rest of the image. All models were trained on CelebAHQ dataset.}
+  \includegraphics[width=0.7\linewidth]{images/gradpaint/CVPR_ffhq.jpeg}
+  \caption{Results on select images from FFHQ. All models were trained on CelebAHQ dataset.
+  While the overall reconstruction of LaMa is decent, zooming on the image unveils 
+  visible artifacts typical of \ac{GAN}s. The \emph{combine-image}
+   baseline produces images with obvious ``copy/paste" effects. Even 
+   with the 4500 forward passes necessary for RePaint, global image coherence often fails.  
+   Our method produces a high-quality and harmonized generation.}
 \label{fig:res_ffhq}
 \end{figure}
 
 
 
-Finally, we add an abundant amount of uncurated results to better appreciate our method.
-Figs.~\ref{fig:uncur1}, ~\ref{fig:uncur2}, ~\ref{fig:uncur3}, and ~\ref{fig:uncur4} show uncurated 
-examples from on ImageNet comparing \emph{combine-image}, RePaint, and GradPaint. GradPaint works particularly well when the 
-task requires fine-grained texture alignment (see rows 1, 5, 12, 31)  and tends to work significantly better for global image 
-coherence compared to other methods (see rows 2, 4, 6, 29, 36, 37). However, GradPaint sometimes fails with difficult tasks with 
-unstandard context (see rows 14, 36). From time to time, we see that GradPaint may slightly add unneeded bias to the inpainting 
-task from the background, e.g. row 41 produced a dog with a pink nose, influenced by the pink background. In general, GradPaint 
-works better than RePaint, even though RePaint requires 5-7x the compute time. More on inference times will be discussed  
-in~\ref{speed_section}.
+
+ 
+     Finally, we add an abundant amount of uncurated results to better appreciate our method.
+     Figs.~\ref{fig:uncur1}, ~\ref{fig:uncur2}, ~\ref{fig:uncur3}, and ~\ref{fig:uncur4} show uncurated 
+     examples from on ImageNet comparing \emph{combine-image}, RePaint, and GradPaint. GradPaint works particularly well when the 
+     task requires fine-grained texture alignment (see rows 1, 5, 12, 31)  and tends to work significantly better for global image 
+     coherence compared to other methods (see rows 2, 4, 6, 29, 36, 37). However, GradPaint sometimes fails with difficult tasks with 
+     unstandard context (see rows 14, 36). From time to time, we see that GradPaint may slightly add unneeded bias to the inpainting 
+     task from the background, e.g. row 41 produced a dog with a pink nose, influenced by the pink background. 
+  
+
+
+
+
+
+
+
+
 
 
 \begin{figure}[H]
   \centering
-    \includegraphics[width=0.6\linewidth]{images/gradpaint/uncur1.jpeg}
+    \includegraphics[width=0.75\linewidth]{images/gradpaint/uncur1.jpeg} % tried 0.7
     \caption{Uncurated results on ImageNet (1). Rows 1, 2, 4, 5, 6 display the superior ability of GradPaint to align fine details and global coherence.}
     \label{fig:uncur1}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-    \includegraphics[width=0.6\linewidth]{images/gradpaint/uncur2.pdf}
+    \includegraphics[width=0.75\linewidth]{images/gradpaint/uncur2.pdf}
     \caption{Uncurated results on ImageNet (2). GradPaint works well on alignement tasks (row 12), but sometimes struggles with non-standard input (row 14). }
     \label{fig:uncur2}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-    \includegraphics[width=0.6\linewidth]{images/gradpaint/uncur3.jpeg}
+    \includegraphics[width=0.75\linewidth]{images/gradpaint/uncur3.jpeg}
     \caption{Uncurated results on ImageNet (3). Our method works well on global coherence (row 29) and generating fine textures requiring alignment (row 31).}
     \label{fig:uncur3}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-    \includegraphics[width=0.6\linewidth]{images/gradpaint/uncur4.pdf}
+    \includegraphics[width=0.73\linewidth]{images/gradpaint/uncur4.pdf}
     \caption{Uncurated results on ImageNet (4). Our method works well on global coherence (rows 36, 37) but sometimes fails on challenging tasks (row 35). From time to time, the background of the image may poorly influence the content to be generated (row 41).}
     \label{fig:uncur4}
 \end{figure}
@@ -1053,19 +1046,14 @@ in~\ref{speed_section}.
 
 \subsection{Latent Diffusion Models}
 
-Fig.~\ref{fig:qualitative_latent_imagenet} shows visual examples of our inpainting method using 
+Fig.~\ref{fig:stable_diffusion_qual} shows visual examples of our method using Stable Diffusion on COCO. 
+Our method produces realistic and harmonized results compared to the baseline method. 
+
+Finally, Fig.~\ref{fig:qualitative_latent_imagenet} shows visual examples of our inpainting method using 
 latent diffusion models on ImageNet. While the baseline method produces low-quality results, our method produces 
 realistic and harmonized results.  
 
-Finally, Fig.~\ref{fig:stable_diffusion_qual} shows visual examples of our method using Stable Diffusion on COCO. 
-Our method produces realistic and harmonized results compared to the baseline method. 
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.625\linewidth]{images/gradpaint/in_latent_samples.pdf}
-  \caption{Qualitative examples from ImageNet with the latent diffusion model. Both the baseline and our algorithm are initialized with the same initial noise map.}
-\label{fig:qualitative_latent_imagenet}
-\end{figure}
 
 
 
@@ -1102,14 +1090,24 @@ Our method produces realistic and harmonized results compared to the baseline me
   a bench leaves snow trees and some branches 
   \end{minipage} & \myim{line_4034} \\
   \end{tabular}
-\label{fig:stable_diffusion_qual}
 \caption{Qualitative results using Stable Diffusion on COCO. As we can see, our method successfully corrects unharmonized inpainted images.}
+\label{fig:stable_diffusion_qual}
 \end{figure}
 
 
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{images/gradpaint/in_latent_samples.pdf} %tried 0.7
+  \caption{Qualitative examples from ImageNet with the latent diffusion model. Both the baseline and our algorithm are initialized with the same initial noise map.}
+\label{fig:qualitative_latent_imagenet}
+\end{figure}
 
-\section{Impact of mask distribution} \label{ood_mask}
+
+\section{Further Studies}
+
+
+\subsection{Impact of mask distribution} \label{ood_mask}
 
 Training-free is particularly advantageous since such a method is is agnostic to any 
 pre-defined mask distribution to train on, contrary to training-based mehods. We 
@@ -1164,7 +1162,7 @@ GradPaint & \multicolumn{1}{l|}{\textbf{44.87}}  & \textbf{0.170} & \multicolumn
 \end{figure}
 
 A method which well-harmonizes an image for the inpainting task will, naturally, produce less diverse images. This can be illustrated in Fig.~\ref{fig:diversity}. Because the baseline method poorly utilizes the surrounding context, samples are diverse but not realistic. On the other hand, our method leverages the surrounding context which produces a more natural result, implying more consistent generations. 
-To further analyze the diversity of our samples, we used one single input image and generated 500 outputs, comparing our method with the baseline \emph{combine-image}. We then extracted image features using the inception v3 pre-trained model\citep{inceptionv3} and display the average of the variance of these features. Tab.~\ref{tab:diversitytab} shows the results. Our method gives diverse samples as the input mask sizes increases, but limits absurd and unharmonized results.
+To further analyze the diversity of our samples, we used one single input image and generated 500 outputs, comparing our method with the baseline \emph{combine-image}. We then extracted image features using the inception v3 pre-trained model~\citep{inceptionv3} and display the average of the variance of these features. Tab.~\ref{tab:diversitytab} shows the results. Our method gives diverse samples as the input mask sizes increases, but limits absurd and unharmonized results.
 
 % \begin{figure}[htbp]
 %   \centering
@@ -1191,7 +1189,7 @@ GradPaint                                         & 1.9                       & 
 
 
 
-\section{Inference Time Study}\label{speed_section}
+\subsection{Inference Time Study}\label{speed_section}
 
 \begin{figure*}[t!]
     \centering

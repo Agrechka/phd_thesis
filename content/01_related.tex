@@ -58,7 +58,7 @@
 % - septembre 
 
 
-\todo{add projected GAN}
+% \todo{add projected GAN}
 
 
 In this chapter, we will first give a quick overview of Neural Network Learning before 
@@ -494,6 +494,14 @@ in image generation for constrained datasets like faces \citep{celeba,karras2018
       \label{fig:stylegan_styles}
   \end{figure}
 
+\minipar{Projected GANs}
+\citep{projectedgans} shows that instead of training the discriminator to discriminate the image, they use fixed projectors 
+and multiple discriminators, each one operating on a different scale. They use a pre-trained feature extractor and 
+\emph{random} fixed projectors to use as input for the multi-scale discriminators, which they argue is less prone to the discriminator 
+"focusing" on one area of the image. They show that these \emph{projected} \ac{GAN}s 
+not only outperform the baseline \ac{GAN}s, but also converge at a much faster rate: matching the baseline's performance after only 
+3 hours of training compared to the previous 5 days of training. 
+
 \subsubsection{Conditional GANs}
 \ac{GAN}s can be conditioned on some condition $c$, known as \ac{cGAN}s \citep{mirza2014conditional}.
 \ac{cGAN}s condition both the generator and discriminator on the condition, and Equation \ref{eq:gan_objective}
@@ -635,7 +643,7 @@ typically done with concatenation to the noise map for modalities other than tex
 while text typically conditions the generation in multiple layers of the 
 UNet through attention mechanisms \citep{nichol2021glide, rombach2022high, saharia2022photorealistic}.
 
-\paragraph{Classifier-Guidance}
+\paragraph{Classifier-Guidance}\label{subsection:classifier_guidance}
 % dhariwal2021diffusion ADM
 To improve generation quality, \cite{sohl2015deep, song2020score, dhariwal2021diffusion} show that 
 it's possible to make use of an auxiliary classifier
@@ -774,13 +782,9 @@ showed that it's possible
 to "rewrite" a generative model to produce images based on user-given images, such as mustaches which 
 replace eyebrows. They showed that by re-optimizing a small subset of weights for the output to match 
 the user-generated output, the new rules of the generative model generalize for new images. 
-\cite{cherepkov2021navigating} shows that it's possible to discover possible edits in the parameter
-space of a StyleGAN.
-Finally, 
-\cite{hertz2022prompt} "hijacks" a pre-trained \ac{DDPM} by manipulating the cross-attention maps 
-(between pixels and text tokens). They generate a first image with a source text, another image 
-with a target text, and then copy/paste values from the cross-attention maps of the latter case into 
-the former case, which edits the first image with the target text. 
+\cite{cherepkov2021navigating} shows by manipulating the weights of one convolutional kernal in a 
+StyleGAN2 network, we can train a network to predict the values of these manipulations from generated images 
+and thus learning meaningful semantic edit operations. 
 
 \subsection{Latent Space Manipulation}\label{subsection:latent_space_manipulation}
 Latent space manipulation can be seen as a particular case of the previous section where the manipulation 

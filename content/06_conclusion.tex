@@ -8,31 +8,91 @@
 \ifthenelse{\boolean{skipConclusion}}{\endinput}{}
 
 
-In this chapter, we approached semantic image-editing through different lenses. 
-In this short conclusion, we will breifly recapitulate our contributions and then 
+In this phD thesis, we approached semantic image-editing through different lenses. 
+In this short conclusion, we breifly recapitulate our contributions and then 
 investigate latest works in the field as well as explore future prospects. 
 
-\todo{styleganxl}
-\todo{gigagan}
-\todo{distillation diffusion models}
-\todo{instruct pix2pix}
 
 \section{Contributions}
 
+We would first like to remind the readers our three objectives when it comes to image editing:
 
-\section{Exciting work}
+\begin{enumerate}
+    \item Fidelity to the input image
+    \item High quality output image 
+    \item Fidelity to the edit operation 
+\end{enumerate}
+
+In Chapter~\ref{chapter:magec}, we aimed to leverage the strong generative powers of StyleGAN2~\citep{karra2020stylegan2}
+to perform our editing. Latent space manipulation techniques, as described in~\ref{subsection:latent_space_manipulation}, have 
+been shown to produce powerful semantic edits for generated images. Examples include: changing expressions for faces, changing 
+orientations for cars, changing background scenary for places. Naively inverting an image into the latent space of a \ac{GAN},
+however, results in poor-quality edits when applying these same images. Our \magec strategy in Chapter~\ref{chapter:magec} solved this problem 
+for images within the domain of a pre-trained \ac{GAN}. Our method incorporates editing directly into the loss function when performing 
+\ac{GAN} inversion, which encourages the produced latent to not only generate the real image, but also remain editable. Finally, we introduced 
+a more adapted metric to evaluate the editability of a \ac{GAN}-inverted image. 
+However, our method is costly, requiring about 35 seconds per image when working with a StyleGAN2 
+which generates 1024x1024 images. Finally, it fails on all 3 of the above objectives when the images are outside of the 
+distribution of the pre-trained \ac{GAN}. 
+Because \ac{GAN}s typically only work well for restricted distributions, this approach can be limiting for the complex images of the real world.
+
+In Chapter~\ref{chapter:flexit}, we decided to circument the inversion process altogether by using a vector-quantized  variational autoencoders, 
+specifically VQ-GAN~\citep{esser2021taming}, to represent the image in a compact latent space. Although the autoencoder of VQ-GAN has no 
+generative powers in itself (an autoregressive model must be trained on the latent code to generate images), the compact, quantized and localized 
+latent code makes it a suitable candidate for editing. To optimize the latent code of VQ-GAN, we used a user-given text prompt guided by 
+ \ac{CLIP}~\citep{radford2021learning}, 
+which embeds images and text in a common latent space. We showed that with well-studied regularizers, we can perform convincing edits of the input 
+image only through text-instructions. We also made a step-forward in defining a robust and standardized evaluation protocol for the specific task of
+ image editing based on ImageNet~\citep{deng2009imagenet}. However, our method is again costly (requires 75 seconds per medium-sized image). 
+ Moreover, because our method lacks a strong generative prior and only relies on regularizers to assure meaningful edits, our method is not guaranteed to work, 
+ especially on images which present ambiguity for \ac{CLIP} or images which respond suboptimally to our default parameters. And finally, while our method 
+ does produce robust reconstructions of real images, some fidelity to the input image is still compromised due to the nature of the autoencoder. Again, 
+ while our method indeed allows \emph{flexible} editing for any image, these limitations may not satisfy the quality requirements expected by the general public.
+
+Finally, in Chapter~\ref{chapter:gradpaint}, we aimed to address the limitations of both methods by using a strong generative prior, a \ac{DDPM}. We 
+tacked the task of inpainting, where our goal was to realistically fill in a missing part of an image. Because of the nature of \ac{DDPM}, we are able 
+to achieve a perfect fidelity to the input image while our gradient-guided harmonizing strategy allowed high-quality generation of the output image.
+Moreover, our approach can be further controlled with text or class information by using a conditional \ac{DDPM}. Our method produces aesthetic results
+and is on par with fully train-based methods and even outperforming them on masks outside of their training distribution. However, our method cannot make 
+truly semantic edits to an object (like those we saw in Chapter~\ref{chapter:magec}), but is limited to object addition or removal without further control.
+
+\section{Current Context and Future Work}
 In the past year, generations from the latest large-scale text-to-image generative models have been flabbergasting 
 everyone from everyday content creaters to specialized \ac{DL} researchers. While only a few years ago, models were 
 trained on relatively little datasets, today's trends are to train larger models on larger datasets. 
-In the past, \ac{GAN}s became especially exciting since they allowed to generate images of unprecedented quality. 
-\ac{DDPM}s, while they were inferior to \ac{GAN}s for restricted datasets, quickly showed their superiority to 
-the latter with their straightforward likelihood-optimizing objective. Scaling up diffusion models was relatively 
-straightforward, and they were thus able to capture complicated world knowledge when trained on large-scale datasets 
-like the public LAION-5B~\ref{schuhmann2022laion} or internal large-scale datasets held by private companies.
+In the past, \ac{GAN}s became especially popular since they allowed to generate images of unprecedented quality on restricted datasets.
+\ac{DDPM}s and autoregressive Transformer models, however, are straightforward to scale-up and have now become the de-fact0 in large-scale 
+ image generation.
 
-In the past year, 
-\ac{DDPM}s became particularly prominent, since their objective function optimizes the likelihood of the data
-and is not prone to instability. 
+ Recently, works on image editing using these large-scale pre-trained models have emerged. For example, Prompt-to-Prompt 
+~\citep{hertz2022prompt} "hijacks" a pre-trained \ac{DDPM} by manipulating the cross-attention maps 
+ (between pixels and text tokens). They generate a first image with a source text, another image 
+ with a target text, and then copy/paste values from select cross-attention maps from the first generation into the second generation, thus 
+ changing word A into word B in the generated images. In a similar fashion to GradPaint, \cite{zestguide2023} guides the generation 
+ process of a \ac{DDPM} by guiding the intermediate noise maps with the gradient of a loss which 
+ calculates the similarity of input-given segmentation maps and the cross attention maps within the UNet, allowing the user
+ to draw images with segmentation maps. \cite{brooks2022instructpix2pix} creates a dataset from before and after images of Prompt-to-Prompt and trains an 
+ Image-to-Image editing network. 
+ 
+It is thus clear that these large-scale \ac{DDPM}s have high-generative capabilities, and we are only beginning to see what kind of editing 
+possibilities are possible through careful manipulation of the network. The manipulation, however, is seemingly less intuitive and native than the 
+direct latent-space manipulation methods we applied in Chapter~\ref{chapter:magec}. For example, while the former requires dissecting internal attention maps, 
+the latter only requires a change to the input of the StyleGAN(2) network. Moreover, they are costly: Prompt-to-Prompt, for example, requires 
+three generations of a \ac{DDPM}, an operation which takes several seconds to several tens of seconds depending on the model and resolution.   While preliminary semantic manipulation methods are promising with \ac{DDPM}s, 
+they give less realistic results than the early latent manipulation works using StyleGAN(2). 
 
+The natural question thus emerges: can \ac{GAN}s, StyleGAN(2) in particular, be scaled up to generate images akin  to \ac{DDPM}s? We have seen in 
+~\ref{subsubsection:gan_weaknesses} that the inherent training instability of \ac{GAN}s and mode-seeking objective makes them scale poorly to 
+bigger architectures and larger datasets. Very recent works \citep{sauer2022styleganxl, kang2023scaling}, however, succeeded in significantly scaling up 
+StyleGAN2 to large datasets. GigaGAN~\citep{kang2023scaling} in particular scaled StyleGAN2 to 1B parameters and successfully trained it on LAION-5B~\citep{schuhmann2022laion}, 
+outperforming large-scale \ac{DDPM}s on standard benchmarks for text-to-image generation. Importantly, generation takes about a tenth of a second. 
+Moreover, latent manipulation methods are native to this \ac{GAN}, 
+allowing high-level semantic manipulation by just changing the latent vectors (in GigaGAN's case, a second latent vector represents the text prompt).
+Although works have not yet emerged to extend real-image editing to GigaGAN, it is likely that \ac{GAN} inversion will be much more successful for this 
+powerful model than the restricted StyleGANs of the past. The out-of-domain images which failed in Chapter~\ref{chapter:magec} are likely  easily represented 
+by this large-scale \ac{GAN}. Moreover, because these new generation of \ac{GAN}s are conditioned by text, a simple token-optimization could successfully work 
+for a given image, allowing additional text-guided editing by re-utilizing and re-contextualizing the optimized token. 
 
-\section{Future Work}
+It is still unclear whether works 
+will converge toward the \ac{GAN} approach or continue their current trend in the \ac{DDPM} approach, but one thing is for sure, we have only seen the 
+beginning of this exciting era for real-image editing.
