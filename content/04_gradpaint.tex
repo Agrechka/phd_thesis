@@ -156,10 +156,10 @@ encoder-decoder convolutional networks from scratch, often using a
 GAN\citep{goodfellowgans} loss to encourage plausibility. Most recent work consists in 
 improving the typical convolutional architecture in the encoder and/or decoder to better
  leverage structural or textural information from the surrounding regions 
- \cite{lama, hong2019deep, yu2020region, hukkelaas2020image, yang2020learning, zhu2021image, liu2018image, ma2022regionwise, zheng2022cm}. 
- \cite{li2020recurrent} proposes a progressive inpainting scheme which iteratively 
+~\cite{lama, hong2019deep, yu2020region, hukkelaas2020image, yang2020learning, zhu2021image, liu2018image, ma2022regionwise, zheng2022cm}. 
+~\cite{li2020recurrent} proposes a progressive inpainting scheme which iteratively 
  fills in the mask by using surrounding information in the deep feature space.  
- \cite{xiong2019foreground, liao2020guidance} propose a framework to locate and 
+~\cite{xiong2019foreground, liao2020guidance} propose a framework to locate and 
  leverage semantic information.
 
 
@@ -171,7 +171,7 @@ trains a randomly initialized convolutional network to generate the input image,
 stopping training before overfitting occurs.~\cite{psp, zhao2021comodgan, glean} 
 utilize powerful pre-trained decoders like StyleGAN2~\citep{karra2020stylegan2} and only train
  encoders to map the input image into the latent space of the decoder, which can produce
-  more realistic results if the input image fits well to the distrubtion of the
+  more realistic results if the input image fits well to the distribution of the
    pre-trained decoder. 
 
 
@@ -249,7 +249,7 @@ As presented in~\ref{subsec:diffusionmodels_framework}, the \emph{DDPM sampling 
 This iterative refinement can be ``guided" to impose constraints on the generated sample $\x_0$. In the case of inpainting, 
 the aim is that the generated image exactly matches the input image outside a given inpainting region. The variable $\hat{\x}_0$, 
 available at each timestep, represents the model's current estimation of what the denoised image will look at the end. 
-For instance,~\cite{nichol2021glide} applies a maskwise correction on $\hat{\x}_0$ at each timestep:
+For instance,~\cite{nichol2021glide} applies a mask-wise correction on $\hat{\x}_0$ at each timestep:
 \begin{equation}
 \hat{\x}_0' = M \odot \hat{\x}_0 + (1 - M) \odot I,
 \end{equation}
@@ -279,7 +279,7 @@ ground truth (noised) pixel values outside the mask.
 
 
 Our strategy is built upon the \textit{combine-image} zero-shot inpainting method presented in \S\ref{background}.
- Our key observation is that the most asthetically-pleasing inpainting results are obtained when the 
+ Our key observation is that the most aesthetically-pleasing inpainting results are obtained when the 
  collage $M \odot \hat{\x}_0 + (1-M) \odot I$ is coherent right from the beginning of the generation process.
   When this is not the case, there is a mismatch between the model's estimation in the inpainting region and 
   the known regions of input image $I$. This mismatch is generally present from the beginning and is not fully 
@@ -997,14 +997,14 @@ appreciate, and we recommend zooming when viewing results. We compare our method
 
 
  
-     Finally, we add an abundant amount of uncurated results to better appreciate our method.
-     Figs.~\ref{fig:uncur1}, ~\ref{fig:uncur2}, ~\ref{fig:uncur3}, and ~\ref{fig:uncur4} show uncurated 
-     examples from on ImageNet comparing \emph{combine-image}, RePaint, and GradPaint. GradPaint works particularly well when the 
-     task requires fine-grained texture alignment (see rows 1, 5, 12, 31)  and tends to work significantly better for global image 
-     coherence compared to other methods (see rows 2, 4, 6, 29, 36, 37). However, GradPaint sometimes fails with difficult tasks with 
-     unstandard context (see rows 14, 36). From time to time, we see that GradPaint may slightly add unneeded bias to the inpainting 
-     task from the background, e.g. row 41 produced a dog with a pink nose, influenced by the pink background. 
-  
+Finally, we add an abundant amount of uncurated results to better appreciate our method.
+Figs.~\ref{fig:uncur1}, ~\ref{fig:uncur2}, ~\ref{fig:uncur3}, and ~\ref{fig:uncur4} show uncurated 
+examples from on ImageNet comparing \emph{combine-image}, RePaint, and GradPaint. GradPaint works particularly well when the 
+task requires fine-grained texture alignment (see rows 1, 5, 12, 31)  and tends to work significantly better for global image 
+coherence compared to other methods (see rows 2, 4, 6, 29, 36, 37). However, GradPaint sometimes fails with difficult tasks with 
+unstandard context (see rows 14, 36). From time to time, we see that GradPaint may slightly add unneeded bias to the inpainting 
+task from the background, e.g. row 41 produced a dog with a pink nose, influenced by the pink background. 
+
 
 
 
@@ -1110,7 +1110,7 @@ realistic and harmonized results.
 \subsection{Impact of mask distribution} \label{ood_mask}
 
 Training-free is particularly advantageous since such a method is is agnostic to any 
-pre-defined mask distribution to train on, contrary to training-based mehods. We 
+pre-defined mask distribution to train on, contrary to training-based methods. We 
 illustrate this by comparing our method to LaMa~\citep{lama} on masks outside of 
 their pre-defined training distribution. Specifically, we create masks where each 
 pixel has a 80\% chance of being masked, masking considerable portions of the image. 

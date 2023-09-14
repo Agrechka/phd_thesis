@@ -32,7 +32,7 @@ Written documents can be easily altered, but surely not brilliantly complex phot
 Alas, the first edited photo in 1846 only shortly followed 
  the invention of photography itself in the 1820s~\citep{imageediting}. 
  During the 1920s, Stalin's regime led a massive photo 
- doctoration campaign, where 
+ doctoring campaign, where 
 opponents were quite literally (and realistically) erased from the history
  books 
 through manual techniques like 
@@ -64,7 +64,7 @@ photo editing which allowed intuitive and semantic image editing.
 
 \ac{AI} refers to the development of computer systems which are able to perform tasks which typically require 
 human-intelligence. The term \ac{AI} is ambiguous and constantly evolving - what are the tasks which "typically require human-intelligence"? 
- For simplicity's sake, the \ac{AI} that we refer to in our work can be more precicely defined as 
+ For simplicity's sake, the \ac{AI} that we refer to in our work can be more precisely defined as 
 \ac{ML}, which consists in (1) designing a parameterized mathematical model, a \ac{NN} $f_\theta$ as well as a loss function and 
 (2) developing algorithms to calculate the parameters $\theta$ of the \ac{NN} which minimize the loss 
 function using real-world data as the "ground-truth". In particular, complex and "deep" functions, referred to as a
@@ -95,11 +95,11 @@ This thesis will explore this subfield of Generative \ac{AI}, and in particular,
 
 \subsection{Meero}
 Created in 2014, Meero is a French startup which specializes in digital image processing using \ac{AI}. Meero made history in 2019 when 
-it raised a record-breaking \$230 million, becoming one of France's only "unicorns". Meero enhances real-world world images from markets
+it raised a record-breaking \$230 million, becoming one of France's only "unicorns". Meero enhances real-world images from markets
 ranging from real-estate to food photography to e-commerce. Meero proposes technology such as background-removal, color-enhancement, object 
 removal and super-resolution. The majority for these image-manipulation algorithms relies on research in \ac{DL}.
 It is important to note that there is often a disparity between the results proposed by state-of-the-art research for 
-datsets and the expected image quality Meero's clients have. Firstly, research in the field often works with ``small" images 
+datasets and the expected image quality Meero's clients have. Firstly, research in the field often works with ``small" images 
 (ImageNet~\citep{deng2009imagenet}, for example, uses 256x256 resolution). Meero's clients, on the other hand, require images of upwards of 5000x5000 resolution, 
 which brings challenges for \ac{DL} applications.  Moreover, generated images in research papers often have 
 visible artifacts, which is acceptable in the context of research but unacceptable for clients expecting a beautiful 
@@ -121,8 +121,8 @@ increasing model capacity, and increasing the size of training datasets.
 In 2013, the Variational Auto-Encoder (\ac{VAE})~\citep{Kingma2014} allowed blurry, low-quality results of images in a particular domain. In 2014,
 \ac{GAN}s were introduced, which Yann LeCun, a \ac{DL} pioneer, described as “the most interesting idea 
  in the last 10 years in Machine Learning”. Indeed, the "generator" was trained not alone, but in unison with another network, the "discriminator",
- both trained "adversarilly" (their respective objectives are opposing). The \ac{GAN} frenzy lasted until the start of the 2020's, and for the
-  first time  allowed truly realistic generations of images in restricted domains, particularly faces. Indeed, the popular webiste
+ both trained "adversarially" (their respective objectives are opposing). The \ac{GAN} frenzy lasted until the start of the 2020's, and for the
+  first time  allowed truly realistic generations of images in restricted domains, particularly faces. Indeed, the popular website
    \urlstyle{thispersondoesnotexist.com} displayed the uncannily realistic face generations using StyleGan~\citep{karra2019stylegan, karra2020stylegan2}.
     However, \ac{GAN}s struggled with 
    larger and more diverse domains, leaving room for other architectures, like the \ac{ViT}~\citep{esser2021taming, ramesh2021zero, ding2021cogview}.
@@ -149,7 +149,7 @@ photograph before further processing it to develop the positive image. These pra
 In contrast, real-image editing with \ac{DL} has a relatively recent history, mainly taking off following the introduction of \ac{GAN}s after 2014.
 Image editing has foundations as an Image-to-Image translation problem, where a \ac{DNN} is trained to learn the transformations from 
 one domain to another~\citep{isola2017image}. These edits were initially limited to edits akin to style-transfer, like transforming 
-photgraphs to paintings or night images to day images, and often presented visible artifacts.
+photographs to paintings or night images to day images, and often presented visible artifacts.
 Over time, image-editing techniques became more elaborate, where the editing operation could change  specific attributes 
 (like man$\rightarrow$woman)~\citep{choi2020stargan} or use a user-given text prompt~\citep{li2020manigan}. These methods still struggled with artifacts 
 and fidelity to the input image, though, since changes were effected in a fully-convolutional manner. More recently, the latest 
@@ -168,7 +168,7 @@ and manipulating the compact representations of pre-trained generative priors to
 Our use of \ac{DNN}s
 for image editing in 2023 can be seen as an amusing echo to the image editing performed almost 200 years ago. Indeed, if the compact negative image 
 is seen as the "latent image" of traditional photography, traditional image editing techniques consisted in manipulating this "latent image" before "decoding" 
-it into a positve image. Likewise, 
+it into a positive image. Likewise, 
 we focus on manipulating the latent vectors of various generative models while striving to push the generated image to be as natural as possible.
 
 

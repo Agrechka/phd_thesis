@@ -29,15 +29,15 @@
 
 \section{Introduction}
 
-In this chapter, we abord the question of image editing with a pre-trained deep \ac{GAN}.
+In this chapter, we aboard the question of image editing with a pre-trained deep \ac{GAN}.
 For the first time, \ac{DL} models, specifically \ac{GAN}s, have achieved photorealistic synthesis \citep{karras2018progressive, karra2019stylegan, karra2020stylegan2}.
-Moreoever, as discussed in Chapter \ref{chapter:related}, methods have recently emerged to 
+Moreover, as discussed in Chapter \ref{chapter:related}, methods have recently emerged to 
 have semantic control of the generation via clever ways of manipulating the latent vector \citep{shen2020, abdal2020styleflow, harkonen2020ganspace, tewari2020stylerig, stylespace_analysis, zhuang2021enjoy, editing_style}.
  These editing methods also produce photorealistic images, contrary to concurrent image-to-image models which 
-produce noticable artificats (albeit being more controllable) \citep{wang2018pix2pixHD, park2019gaugan}.
+produce noticeable artifacts (albeit being more controllable) \citep{wang2018pix2pixHD, park2019gaugan}.
  In the context of image editing for the general public, latent space manipulation with the latest 
  StyleGAN2 network \citep{karra2020stylegan2}
-is thus an inticing area to experiment with. 
+is thus an enticing area to experiment with. 
 
 % Generative Adversarial Networks (GANs) \cite{goodfellowgans} have made such ideas 
 % possible in recent years. Recently, the celebrated StyleGAN \cite{karra2019stylegan, karra2020stylegan2} 
@@ -204,7 +204,7 @@ latent space, semantically "interpolated" images can be generated through
 StyleGAN.
 
 InterfaceGAN \citep{shen2020} makes use of an auxiliary classifier on faces which predicts 
-the 40 celeba \citep{celeba} attributes from a given face image. 
+the 40 CelebA \citep{celeba} attributes from a given face image. 
 Then, by generating many (latent, image) pairs with the pre-trained \ac{GAN},
 they obtain (latent, descriptor) training data by applying the auxiliary 
 classifier. Finally, they train an independent SVM \citep{svms} for each 
@@ -249,7 +249,7 @@ opposite.
 
 GAN inversion has roots shortly after the appearance of \ac{GAN}s 
 themselves in an effort to edit real images 
-via manual drawing techniques \citep{zhu2016generative, bausemantic},
+via manual drawing techniques \citep{zhu2016generative, bau2020semantic},
 which used an optimization-based approach initialized with an encoding.
 \cite{bau2019seeing} proposed an optimization-based inversion strategy 
 which optimized the parameters of a \ac{GAN} iteratively layer by layer.
@@ -477,7 +477,7 @@ We perform thorough evaluation of our method using 1000 random samples from the 
 For the feature extractor $F$, we train an attribute-classifier
 on CelebA \citep{celeba} to predict 40 binary attributes. We use a 
 ResNet50 backbone \citep{he2016resnet}
-and ajust the dimensions of the last fully-connected layer to 40. We finetuned 
+and adjust the dimensions of the last fully-connected layer to 40. We finetuned 
 this model by first 
 training the last layer for 2 epochs with a learning rate of 0.02 and then 
 finetuning 
@@ -486,7 +486,7 @@ the entire model with discriminative learning rates ranging from 0.002 to
 in \cite{howard2018universal}.
     
 To train our $\linknet$ model,
-we sample $50,000$ (latent, descriptor) training pairs with our pre-trianed StyleGAN2. 
+we sample $50,000$ (latent, descriptor) training pairs with our pre-trained StyleGAN2. 
 Note that we use the extended $\mathcal{W+}$ space for generation, meaning 
 that we generate a distinct latent vector for each style block of StyleGAN2. 
 We use the predicted binary labels of $F$ as our ground-truth labels for the 
@@ -556,7 +556,7 @@ space to $\mathcal{W+}$ by allowing each of the $512$-dimensional \emph{style ve
 
 
 \minipar{Training Configurations} 
-For our feature extractor $F$, we use a pre-trained publically available cars 
+For our feature extractor $F$, we use a pre-trained publicly available cars 
 classifier \citep{pretrained_cars} which classifies the image 
 into one of $196$ car models.
 
@@ -845,7 +845,7 @@ our method and a competing method, as the edit operations were the same for all 
 The standard metrics at evaluating image quality are poorly adapted to evaluating a 
 projection. Firstly, as we saw in the previous section, reconstruction and editability 
 metrics are independent, which makes it difficult to choose a good trade-off without an 
-ad hoc solution. Moreoever, the standard image quality metrics presented in Tab. \ref{tab:standard_metrics}
+ad hoc solution. Moreover, the standard image quality metrics presented in Tab. \ref{tab:standard_metrics}
 have no way of evaluating whether or the edited image is coherent with regards to the input image. 
 We aim to address both of these weaknesses with a custom metric, the \emph{edit-consistency score}.
  

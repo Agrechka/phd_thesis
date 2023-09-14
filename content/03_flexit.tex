@@ -9,7 +9,7 @@
 
 \section{Introduction}
 
-Thusfar, we have examined one way of performing semantic-image editing: 
+Thus far, we have examined one way of performing semantic-image editing: 
 generalizing latent manipulation methods of \ac{GAN}s to real images. For this, 
 we saw in the previous chapter that the real image must first be inverted into 
 the latent space of a \ac{GAN}, a task that is not trivial and will poorly respond to 
@@ -451,7 +451,7 @@ an evaluation metric. During training, so as to reduce bias in the \ac{LPIPS} ev
 
 The \ac{LPIPS}  distance is computed at an image resolution of 256, for both evaluation and 
 optimization.
-All \ac{LPIPS}  scores which we will present have been multiplied by 100 for readibility.
+All \ac{LPIPS}  scores which we will present have been multiplied by 100 for readability.
 
 The \ac{LPIPS}  distance cannot distinguish edits which are relevant to the text 
 query from those which are not; and we don't know the minimal \ac{LPIPS} distance between 
@@ -928,7 +928,7 @@ gets stronger, as expected;
   algorithm as the distribution of output images gets closer to the input distribution, 
   and thereby farther from the  target distribution.
 
-The parameter $\lambda_S$, similarly to the regularization parameters, has a an optimal
+The parameter $\lambda_S$, similarly to the regularization parameters, has an optimal
  value which minimizes the \ac{CSFID}. It is beneficial to give a hint to the optimization 
  algorithm which semantic content should be changed, however focusing too much this 
  objective reduces image realism.

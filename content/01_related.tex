@@ -79,7 +79,7 @@ In the case of \emph{supervised learning}, we have access to a ground-truth data
 ground-truth label $y_i \in \mathcal{Y}$. In the case of \emph{unsupervised learning}, we only 
 have access to unlabelled training data $\mathcal{D} = \{x_1, ..., x_N\}$. 
 We define a differentiable loss function $\mathcal{L}$ which estimates the error of the  \ac{NN}
-prediction prediction $f_\theta$. Because the \ac{NN}
+prediction $f_\theta$. Because the \ac{NN}
 is fully differentiable, we are able to calculate the gradient of the loss function with respect 
 to the \ac{NN} parameters $\theta$, and thus iteratively optimize them. At the core level,
 the iterative algorithm which \emph{trains} a \ac{NN} is called \emph{Gradient Descent},
@@ -89,7 +89,7 @@ the iterative algorithm which \emph{trains} a \ac{NN} is called \emph{Gradient D
 can then be used to train \ac{DNN}s. In the particular case of \ac{CV}, we aim to build models 
 which treat image data. In this case, $\mathcal{X}$ are images, represented as 
 $\mathrm{n} \times \mathrm{m} \times \mathrm{c}$ matrices in which each value is an integer 
-between $0$ and $255$. The number of channels $mathrm{c}$ is $1$ in the case of black and white 
+between $0$ and $255$. The number of channels $\mathrm{c}$ is $1$ in the case of black and white 
 images and $3$
 in the case of colored images. Historically, handcrafted features were extracted from images and 
 then aggregated in an approach similar to "bag of words" \citep{lowe2004distinctive, ahonen2004face, dalal2005histograms}
@@ -141,7 +141,7 @@ we are dealing with very high-dimensional data (in the case
 of a $500\times500$ image, there are $750000$ dimensions represented with 8-bit values). Thus, models which assume 
 that data follows a pre-defined distribution, like Gaussian Mixture Models 
 \citep{em_algoo}, are 
-ineffective for our goal. Indeed, \ac{DNN}s specfically have had the most success modeling 
+ineffective for our goal. Indeed, \ac{DNN}s specifically have had the most success modeling 
 this complicated form of data. In this work, we specifically use three families of different generative models:
 \ac{VAE}s, \ac{GAN}s and \ac{DDPM}s. These families have had great success in the task of 
 image generation and we use these three families in our work. Figure \ref{fig:gen_models}
@@ -219,7 +219,7 @@ Gaussian with fixed variance. In this way, the decoder
 network simply outputs the reconstructed image directly.
 The parameters $\theta$ and $\phi$ are the weights to the 
 encoder and decoder respectively, and can be optimized via gradient descent. Note that when sampling a 
-latent vector $z$ from the output given by the encoder, we perform a \emph{reparametrizaton trick} which 
+latent vector $z$ from the output given by the encoder, we perform a \emph{reparametrization trick} which 
 allows us to backpropagate through the encoder network. This consists in sampling a random vector 
 $\epsilon \sim \mathcal{N}(0, I_d)$ and then reparameterizing to obtain the latent vector $z$ with 
 $z = \mu_\theta +  \sigma_\theta * \epsilon $. The basic architecture can be visualized in the 
@@ -264,10 +264,10 @@ In fact, \cite{higgins2017betavae} show that when putting more penalty on the
 the \ac{KL}-divergence term in Equation \ref{eq:vae}, known as $\beta$-VAE, the \ac{VAE}
 produces \emph{disentangled} representations. Disentanglement refers to a learned 
 latent space in which each latent factor is mapped to an 
-independent generative factor. For example, in a disentangled represenation, 
+independent generative factor. For example, in a disentangled representation, 
  one latent factor could control rotation 
 while another one could control size. A disentangled latent space can be especially attractive 
-in the case of image editing, which will be discussed later in \ref{subsection:latent_space_manipulation}.
+in the case of image editing, which will be discussed later in~\ref{subsection:latent_space_manipulation}.
 
 \subsection{Generative Adversarial Networks}\label{sec:gans}
 
@@ -277,9 +277,9 @@ We will now introduce \ac{GAN}s, a framework introduced by \cite{goodfellow2014g
 which has been become a core component in image generation and image editing applications. 
 
 
-In contrast with \ac{VAE}s, \ac{GAN}s do not explicity model the probability 
+In contrast with \ac{VAE}s, \ac{GAN}s do not explicitly model the probability 
 distribution of the data $p(x)$. Instead, \ac{GAN} use two networks, the generator $G$ 
-and the discriminator $D$ which are trained together adversarily. Similarly to 
+and the discriminator $D$ which are trained together adversarially. Similarly to 
 \ac{VAE}, we use a latent space ${z \in \mathcal{Z}}$ which will be used as input for the 
 generator network. Unlike \ac{VAE}s, this latent space is not learned, and is 
 typically defined as $\mathcal{N}(0, I_d)$, with $d$ the dimension of the latent space. 
@@ -306,7 +306,7 @@ to the training mechanism using the zero-sum \emph{GAN loss} (Equation \ref{eq:g
 some generative network and a discriminator network trained jointly, but there is no further constraint on the 
 architecture used by a \ac{GAN}.  Indeed, a \ac{VAE}'s decoder architecture can be practically identical
 to a \ac{GAN}'s generator network, both transforming a latent vector $z$ into an image. Similarly, the 
-discriminator can simply ressemble a CNN-classifier architecture. 
+discriminator can simply resemble a CNN-classifier architecture. 
 For this reason, there is nothing stopping us from having hybrid architectures which combines the 
 typical encoder-decoder of a 
 \ac{VAE} with a discriminator and a \ac{GAN} loss, as has been done by several works \citep{larsen2016autoencoding, 
@@ -351,7 +351,7 @@ the discriminator "stuck" during learning),
 this occurs less often given the fact that the discriminator's job is inherently easier.
 
 \minipar{Mode Collapse} Mode collapse refers to the generator collapsing to only produce one sample or one family of
-similar samples. In this case, a single genered sample which is classified as realistic by the discriminator will 
+similar samples. In this case, a single generated sample which is classified as realistic by the discriminator will 
 push the generator towards this sample. The adversarial nature of a \ac{GAN} often pushes it to drop modes which are 
 deemed less realistic.
 
@@ -364,7 +364,7 @@ fine-grained control for generation or manipulation.
 as mentioned in \ref{sec:gan_architecture}), we cannot easily obtain the latent \ac{GAN} code 
 corresponding to a real image. This makes high-level image editing problematic. 
 
-The works and techniques descibed below ultimately allowed \ac{GAN}s to become state-of-the-art in image synthesis.
+The works and techniques described below ultimately allowed \ac{GAN}s to become state-of-the-art in image synthesis.
 
 
 \subsubsection{GAN Improvements}
@@ -398,7 +398,7 @@ Concretely, for a single sample, we calculate its distance (in a feature space) 
  the discriminator \citep{karras2018progressive}. Because the discriminator will 
  have access to extra information (very small distances correlate with fake samples), the generator will 
  be encouraged to produce more diverse samples. However, this approach depends on the batch size, which, 
- in the case of high-resolution synthesis, is quite low to accomodate the memory constraints of large images.
+ in the case of high-resolution synthesis, is quite low to accommodate the memory constraints of large images.
  Moreover, it is not immune to the \ac{GAN} dropping some modes. 
 
  \minipar{Spectral Normalization} Introduced in \cite{miyato2018spectral}, spectral normalization 
@@ -413,7 +413,7 @@ of brutally generating high-resolution images which is prone to heavy instabilit
  the generator and discriminator should be trained 
 \emph{progressively} from low-resolution generation to high-resolution generation. Figure \ref{fig:pgan}
 shows the training mechanism for this architecture.
- The generator and discriminator, mirror architecures of 
+ The generator and discriminator, mirror architectures of 
 each other, are first trained to successfully generate $4 \times 4$ resolution images. This is an easy 
 task for the generator, and is successfully trained without much training difficulty. When training is 
 complete, another upsampling and downsampling block are respectfully added to the 
@@ -426,7 +426,7 @@ the gradients from the discriminator are more likely to be able to guide the gen
 
 Later work \citep{karnewar2020msg, karra2020stylegan2} builds off this framework in a single 
 architecture which implicitly performs progressive-growing without explicitly changing the architecture at each new 
-resolution adition. 
+resolution addition. 
 
 \begin{figure}[tb]
       \begin{center}
@@ -473,7 +473,7 @@ architecture, improving the modulation and demodulation scheme of \ac{AdaIN} and
 This encourages for small changes in the latent space to produce small changes in the 
 image space. With these improvements, StyleGAN2 quickly became the state-of-the-art 
 in image generation for constrained datasets like faces \citep{celeba,karras2018progressive},
- bedrooms and animals \citep{lsun} for many years to come. Moreoever, with its 
+ bedrooms and animals \citep{lsun} for many years to come. Moreover, with its 
  powerful latent space, StyleGAN2 opened the door for many works on image editing, 
  more of which will be discussed in \ref{section:image_editing}.
  
@@ -512,14 +512,14 @@ can be rewritten as follows:
 \end{equation}
 
 The condition can be a class label, a vector, or an image. The latter case is known as image-to-image translation,
-and will be discussed in more detail in section \ref{subsection:image-to-image models}.
+and will be discussed in more detail in section~\ref{subsection:image-to-image models}.
 Although unconditional \ac{GAN}s achieved remarkable, photo-realistic synthesis on restricted datasets
 like faces, conditional  \ac{GAN}s historically struggled on more diverse datasets like ImageNet. 
 In 2019, however, significant progress on this front was made with BigGan \citep{brock2018large}, 
 which achieved state-the-art results on ImageNet, significantly outperforming previous methods. They 
-used a residual architecture, \ac{GAN} hinge loss \citep{lim2017geometric} (a variant of the adversarial loss),
- spectral normalization \citep{miyato2018spectral},
- class-conditional Batch Normalization \cite{ioffe2015batch}, scaling up the layer sizes, 
+used a residual architecture, \ac{GAN} hinge loss~\citep{lim2017geometric} (a variant of the adversarial loss),
+ spectral normalization~\citep{miyato2018spectral},
+ class-conditional Batch Normalization~\citep{ioffe2015batch}, scaling up the layer sizes, 
 and increased
 batch size. BigGAN remained state-of-the-art for
  ImageNet synthesis 
@@ -527,7 +527,7 @@ for several years until diffusion models outperformed them, which we describe in
  next section. Class-conditioning helps provide the \ac{GAN} with additional information, helping training stability and mode-collapse.
  If, however, data labels are not available, unconditional \ac{GAN}s struggle to represent a diverse distribution like ImageNet.
  To combat this, \cite{casanova21nips} proposed Instance-GAN, where the generator and discriminator are 
- conditioned on a single SwAV~\citep(caron20nips) embedding of a real image. The discriminator then only observes the $K$ nearest-neighbors 
+ conditioned on a single SwAV~\citep{caron20nips} embedding of a real image. The discriminator then only observes the $K$ nearest-neighbors 
  as "real samples" while the generator aims at generating images close to the input image. Generating a variety 
  of samples is possible in this way even without labels.
 
@@ -627,7 +627,7 @@ Without any modification, sampling with diffusion models is very costly, as it r
 process than their \ac{GAN} counterparts which only require one forward pass. On a modern 
 GPU, a single sampling takes several minutes. \cite{nichol2021improved} shows that we can 
 resample the number of steps and obtain their corresponding variances and perform fewer 
-sampling steps during inference. They show that $100$  steps is sufficiant for high-quality 
+sampling steps during inference. They show that $100$  steps is sufficient for high-quality 
 generation with their model trained with $4000$ steps. \cite{song2021denoising} show that 
 this strategy works even better with a deterministic model, and can reduce the amount of steps
 down to $~20$. Finally, \cite{rombach2022high} show that we can considerably reduce training and 
@@ -685,13 +685,13 @@ datasets \citep{schuhmann2022laion} which allowed unprecedented generation  in t
 photorealism and diversity. GLIDE \citep{nichol2021glide} built off the architecture in 
 \cite{dhariwal2021diffusion} to adapt class-conditioning to text-conditioning. DALL-E 2 \citep{ramesh2022hierarchical}
 also built on this architecture, but conditioned the generation on  CLIP \cite{radford2021learning}
-encodings of the image to "unCLIP" the embedding. Imagen \citep{saharia2022photorealistic} a leveraged 
-a much larger language model for the text encoder which conditioned generation, showing that 
+encodings of the image to "unCLIP" the embedding. Imagen \citep{saharia2022photorealistic} leveraged 
+much larger language model for the text encoder which conditioned generation, showing that 
 performance scales with the text encoder size but not with the UNet size. Latent Diffusion Models \citep{rombach2022high}
 first compresses images into a $~8\times$ reduced space with an encoder before performing the 
 diffusion process on these latents, rather than the noised images. Their model requires much 
-less ressources for training and also allows for a much faster inference speed. Other models, 
-like MidJourney
+less resources for training and also allows for a much faster inference speed. Other actors, like Midjourney,
+have also released impressive results with their private undisclosed models and weights. 
 
 
 \section{Image Editing}\label{section:image_editing}
@@ -874,7 +874,7 @@ makes less sense to evaluate on specific domains like human faces or bedrooms. T
 \minipar{FID}\label{sec:related_fid}
 
 
-The \ac{FID} score \citep{heusel2017gans} was proposed to adress these drawbacks and 
+The \ac{FID} score \citep{heusel2017gans} was proposed to address these drawbacks and 
 was found to be more consistent with human evaluation. This score uses a pre-trained 
 classifier (again, typically the Inception V3 network) as a feature-extractor for the 
 real and the generated images.  \ac{FID}
@@ -954,7 +954,7 @@ And recall as:
 
 
 Precision and Recall was shown to correlate with human perception and allows us to 
-diagnose synthesis problems more precicesly (\ac{FID} encapulates both diversity and fidelity 
+diagnose synthesis problems more precisely (\ac{FID} encapulates both diversity and fidelity 
 in one single metric which sometimes doesn't allow granularity). Moreover, with this nearest-neighbor 
 approach, we can say that an image is \emph{realistic} if there exists a feature vector in $\Phi_r$
 which is closer to the test image's feature vector than to its $k^{th}$ nearest neighbor.
@@ -1090,7 +1090,7 @@ aboarded the question of inpainting with \ac{DDPM}s. Because of their gradual in
 guarantee zero image fidelity loss in the regions outside of the inpainting mask while continually 
 blending the generated output with the known regions through noising and denoising. However, the 
 denoising process is too fast for the blending to be successfully harmonized, inspiring works which 
-forecfully slow-down the denoising process for better harmonization \citep{lugmayr2022repaint}. We 
+forcefully slow-down the denoising process for better harmonization \citep{lugmayr2022repaint}. We 
 go through a different route, and instead guide the denoising process with a gradient of a loss 
 specific for harmonization between the two regions. Our method can be applied to unconditional \ac{DDPM}s 
 as well as conditional ones, and we performed thorough evaluation on face datasets (CelebaHQ and FFHQ),

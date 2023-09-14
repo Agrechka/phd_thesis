@@ -12,7 +12,7 @@ the task of image editing has been less studied. Image editing consists in
 simultaneously synthesizing new characteristics while preserving original image attributes intact. 
 This inherent tradeoff between synthesis and preservation renders the task particularly difficult.
 
-In this thesis, we approach the task through different angles, exploiting three different familes of 
+In this thesis, we approach the task through different angles, exploiting three different families of 
 generative models: \ac{VAE}, \ac{GAN} and \ac{DDPM}.
 
 We first study how to use a pre-trained \ac{GAN} to modify a real image.
@@ -23,7 +23,7 @@ high-quality edits.
 
 Then, we leverage a vector-quantized variational autoencoder (VQ-GAN) to obtain a compact representation of an image. 
 The goal is to optimize this latent vector to match a user-given target text prompt. We use CLIP text and image encoders
-to represent images and text in a joint representation space. We thorougly study the use of 
+to represent images and text in a joint representation space. We thoroughly study the use of 
 regularizers to encourage strong fidelity to the original image as well as coherent editing to the text prompt.
 We propose a robust and standardized evaluation protocol for text-guided editing.
 

@@ -9,7 +9,7 @@
 
 
 In this phD thesis, we approached semantic image-editing through different lenses. 
-In this short conclusion, we breifly recapitulate our contributions and then 
+In this short conclusion, we briefly recapitulate our contributions and then 
 investigate latest works in the field as well as explore future prospects. 
 
 
@@ -21,12 +21,12 @@ We would first like to remind the readers our three objectives when it comes to 
     \item Fidelity to the input image
     \item High quality output image 
     \item Fidelity to the edit operation 
-\end{enumerate}
+\end{enumerate} 
 
 In Chapter~\ref{chapter:magec}, we aimed to leverage the strong generative powers of StyleGAN2~\citep{karra2020stylegan2}
 to perform our editing. Latent space manipulation techniques, as described in~\ref{subsection:latent_space_manipulation}, have 
 been shown to produce powerful semantic edits for generated images. Examples include: changing expressions for faces, changing 
-orientations for cars, changing background scenary for places. Naively inverting an image into the latent space of a \ac{GAN},
+orientations for cars, changing background scenery for places. Naively inverting an image into the latent space of a \ac{GAN},
 however, results in poor-quality edits when applying these same images. Our \magec strategy in Chapter~\ref{chapter:magec} solved this problem 
 for images within the domain of a pre-trained \ac{GAN}. Our method incorporates editing directly into the loss function when performing 
 \ac{GAN} inversion, which encourages the produced latent to not only generate the real image, but also remain editable. Finally, we introduced 
@@ -36,7 +36,7 @@ which generates 1024x1024 images. Finally, it fails on all 3 of the above object
 distribution of the pre-trained \ac{GAN}. 
 Because \ac{GAN}s typically only work well for restricted distributions, this approach can be limiting for the complex images of the real world.
 
-In Chapter~\ref{chapter:flexit}, we decided to circument the inversion process altogether by using a vector-quantized  variational autoencoders, 
+In Chapter~\ref{chapter:flexit}, we decided to circumvent the inversion process altogether by using a vector-quantized  variational autoencoders, 
 specifically VQ-GAN~\citep{esser2021taming}, to represent the image in a compact latent space. Although the autoencoder of VQ-GAN has no 
 generative powers in itself (an autoregressive model must be trained on the latent code to generate images), the compact, quantized and localized 
 latent code makes it a suitable candidate for editing. To optimize the latent code of VQ-GAN, we used a user-given text prompt guided by 
@@ -58,7 +58,7 @@ truly semantic edits to an object (like those we saw in Chapter~\ref{chapter:mag
 
 \section{Current Context and Future Work}
 In the past year, generations from the latest large-scale text-to-image generative models have been flabbergasting 
-everyone from everyday content creaters to specialized \ac{DL} researchers. While only a few years ago, models were 
+everyone from everyday content creators to specialized \ac{DL} researchers. While only a few years ago, models were 
 trained on relatively little datasets, today's trends are to train larger models on larger datasets. 
 In the past, \ac{GAN}s became especially popular since they allowed to generate images of unprecedented quality on restricted datasets.
 \ac{DDPM}s and autoregressive Transformer models, however, are straightforward to scale-up and have now become the de-fact0 in large-scale 
