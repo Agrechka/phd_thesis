@@ -43,11 +43,11 @@ models.
 \selectlanguage{french}
 
 L'édition des images a une histoire riche, datant d'environ deux siècles. 
-L'édition digitale "classique" des images nécessite une forte maitrise artistique
+L'édition digitale "classique" des images nécessite une forte maîtrise artistique
 et beaucoup de temps (plusieurs heures pour chaque image que l'on souhaite modifier).
 Récemment, d'importants progrès en modélisation générative ont 
 permis de créer des images réalistes de haute qualité. Cependant, la tâche d'édition 
-d'une image réelle est moins étudiée. Elle consiste à la fois à synthésiser une nouvelle charactéristique de 
+d'une image réelle est moins étudiée. Elle consiste à la fois à synthétiser une nouvelle caractéristique de 
 l'image et à garder une autre partie fidèle à l'originale, ce qui rend la tâche 
 particulièrement ardue.
 
@@ -61,18 +61,18 @@ bien connues, mais se transposent mal au cas des images réelles. Nous en étudi
 afin d'assurer une édition de qualité.
 
 Ensuite, nous utilisons des autoencodeurs variationnels avec quantification 
-vectorielle (VQ-GAN) pour avoir une répresentation compacte de l'image. 
+vectorielle (VQ-GAN) pour avoir une représentation compacte de l'image. 
 L'objectif est d'optimiser le vecteur latent de celle-ci pour se rapprocher 
 d'un texte exprimé comme une requête pour l'édition. 
 Nous utilisons des encodeurs CLIP  pour représenter l'image et le texte dans un espace commun.
 Nous proposons une façon pour optimiser 
-les hyperparamètres assurant une grande fidelité à l'image originale et une édition cohérente à la requête textuelle. 
+les hyperparamètres assurant une grande fidélité à l'image originale et une édition cohérente à la requête textuelle. 
 Nous proposons
 un protocole d'évaluation robuste et montrons l'intérêt de notre méthode.
 
 Enfin, dans un troisième temps, nous traitons l'édition d'image comme un problème 
 particulier d'inpainting. Nous exploitons un \ac{DDPM} pré-entrainé 
-et nous nous basons sur la méthode d'inpainting classique, en remplacant à chaque étape 
+et nous nous basons sur la méthode d'inpainting classique, en remplaçant à chaque étape 
 du processus de débruitage la région qu'on ne souhaite pas modifier par l'image réelle bruitée.
 Cependant, cette méthode est susceptible d'introduire une distorsion entre la région 
 générée et la région réelle. Nous proposons une méthode basée sur le gradient 
